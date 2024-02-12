@@ -60,4 +60,8 @@ A non profit project.
 
 Assets in use:
 
+Mixamo - Timmy (main character) -  
+
+Toon Road Texture - https://opengameart.org/content/toon-road-texture
+Grass texture - Grass 15 - https://opengameart.org/content/blended-textures-of-dirt-and-grass
 POLYGON Starter Pack - Low Poly 3D Art by Synty https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819
