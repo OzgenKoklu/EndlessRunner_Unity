@@ -7,6 +7,7 @@ Made with Unity 2022.3.0f1 LTS
   # Sections
   <ol>
 	  <li><a href="#Introduction">Introduction</a></li>
+	  <li><a href="#Dev Log">Dev Log</a></li>
 	  <li><a href="#Videos">Videos</a></li>
 	  <li><a href="#Technical Details">Technical Details</a></li>
 	  <li><a href="#Acknowledgements">Acknowledgements</a></li>
@@ -21,7 +22,20 @@ A task project assigned by Velo Games.
 
 A simple endless runner game similar to subway surfers.
 
-More info in ....???.pdf.
+More info in VeloGames-task-2-tr.pdf in the root folder.
+
+----------
+
+<!-- Dev Log -->
+## Dev Log
+
+PNG 1: 
+
+
+PNG 2: 
+
+
+PNG 3: 
 
 ----------
 
@@ -60,8 +74,21 @@ A non profit project.
 
 Assets in use:
 
-Mixamo - Timmy (main character) -  
+In Game Assets:
+
+Mixamo - Timmy (main character) & animations - Adobe - https://www.mixamo.com/#/ 
 
 Toon Road Texture - https://opengameart.org/content/toon-road-texture
+
 Grass texture - Grass 15 - https://opengameart.org/content/blended-textures-of-dirt-and-grass
+
 POLYGON Starter Pack - Low Poly 3D Art by Synty https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819
+
+Sounds: 
+
+select sound - https://pixabay.com/sound-effects/select-sound-121244/
+
+UI: 
+
+UI - Cartoon Mobile Rounded Icon Buttons - NathanLovatoArt - https://opengameart.org/content/cartoon-mobile-rounded-icon-buttons
+
