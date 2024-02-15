@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 1331550264479466510}
   - component: {fileID: 1297501900226705962}
   - component: {fileID: 1308071217823697442}
-  - component: {fileID: 1338323285174155048}
+  - component: {fileID: 5208479027967085342}
   m_Layer: 0
   m_Name: SM_PolygonPrototype_Prop_Crate_03
-  m_TagString: Untagged
+  m_TagString: SlideObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -84,8 +84,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1338323285174155048
-MeshCollider:
+--- !u!65 &5208479027967085342
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -99,13 +99,12 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: 8dca5595cdaced544b3bca78ca84e8d8, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 0.99649966, y: 1.226024, z: 0.9964958}
+  m_Center: {x: 0.00000024630023, y: -0.11476475, z: 0}
 --- !u!1 &1890976667106326161
 GameObject:
   m_ObjectHideFlags: 0
@@ -119,7 +118,7 @@ GameObject:
   - component: {fileID: 4953009844072862875}
   m_Layer: 0
   m_Name: ObstaclePoles
-  m_TagString: Untagged
+  m_TagString: SlideObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -200,7 +199,7 @@ GameObject:
   - component: {fileID: 2537261584691242523}
   m_Layer: 0
   m_Name: SlidingObstacle
-  m_TagString: Untagged
+  m_TagString: SlideObstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -212,13 +211,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5204321678087703683}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
+  m_LocalScale: {x: 0.15714282, y: 0.15714282, z: 0.15714282}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3477766693462344398}
   - {fileID: 1331550264479466510}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

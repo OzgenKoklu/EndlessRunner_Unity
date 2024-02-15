@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -11,7 +12,9 @@ public class Player : MonoBehaviour
     private Vector3 _leftLanePosition = new Vector3(-2.3f, 0, 0);
     private Vector3 _middleLanePosition = new Vector3(0, 0, 0); 
     private Vector3 _rightLanePosition = new Vector3(2.3f, 0, 0);
-    
+    private Vector3 _upperPlanePosition = new Vector3(0, 2f, 0);
+    private Vector3 _lowerPlanePosition = new Vector3(0, 0, 0);
+
 
     [SerializeField] private GameInput _gameInput;
     [SerializeField] private PlayerCollisionDetection _playerCollisionDetection;
@@ -56,10 +59,18 @@ public class Player : MonoBehaviour
         _gameInput.OnJumpAction += _gameInput_OnJumpAction;
         _gameInput.OnSlideUnderAction += _gameInput_OnSlideUnderAction;
         _playerCollisionDetection.OnGroundHit += _playerCollisionDetection_OnGroundHit;
-
+        _playerCollisionDetection.OnRampContact += _playerCollisionDetection_OnRampContact;
+        _playerCollisionDetection.OnGroundContactLost += _playerCollisionDetection_OnGroundContactLost;
 
         _playerState = PlayerState.Running;
  
+    }
+
+    private void _playerCollisionDetection_OnGroundContactLost(object sender, EventArgs e)
+    {
+        Vector3 _newCharacterPosition = new Vector3(transform.position.x, _lowerPlanePosition.y, transform.position.z);
+        Debug.Log("LowerPlanePosition Triggered");
+        transform.position = _newCharacterPosition;
     }
 
     private void _playerCollisionDetection_OnGroundHit(object sender, EventArgs e)
@@ -130,11 +141,13 @@ public class Player : MonoBehaviour
 
                 if (transform.position.x == _rightLanePosition.x)
                 {
-                    transform.position = _middleLanePosition;
+                    Vector3 _newCharacterPosition = new Vector3(_middleLanePosition.x, transform.position.y, transform.position.z);
+                    transform.position = _newCharacterPosition;
                 }
                 else
                 {
-                    transform.position = _leftLanePosition;
+                    Vector3 _newCharacterPosition = new Vector3(_leftLanePosition.x, transform.position.y, transform.position.z);
+                    transform.position = _newCharacterPosition;
                 }
             break;
             case Direction.Right:
@@ -147,17 +160,25 @@ public class Player : MonoBehaviour
 
                 if (transform.position.x == _leftLanePosition.x)
                 {
-                    transform.position = _middleLanePosition;
+                    Vector3 _newCharacterPosition = new Vector3(_middleLanePosition.x, transform.position.y, transform.position.z);
+                    transform.position = _newCharacterPosition;
                 }
                 else
                 {
-                    transform.position = _rightLanePosition;
+                    Vector3 _newCharacterPosition = new Vector3(_rightLanePosition.x, transform.position.y, transform.position.z);
+                    transform.position = _newCharacterPosition;
                 }
 
                 break;
         
         
         }
+    }
+    private void _playerCollisionDetection_OnRampContact(object sender, EventArgs e)
+    {
+        Vector3 _newCharacterPosition = new Vector3(transform.position.x, _upperPlanePosition.y, transform.position.z);
+
+        transform.position = _newCharacterPosition;
     }
 
 
@@ -166,6 +187,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public bool IsPlayerOnUpperPlane()
+    {
+        return transform.position.y == _upperPlanePosition.y;
     }
 
     public bool IsPlayerRunning()

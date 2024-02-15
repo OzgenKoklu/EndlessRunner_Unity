@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - GroundPlane
+  - Ramp
+  - Platform
+  - Obstacle
+  - SlideObstacle
+  - WallObstacle
+  - JumpObstacle
   layers:
   - Default
   - TransparentFX
