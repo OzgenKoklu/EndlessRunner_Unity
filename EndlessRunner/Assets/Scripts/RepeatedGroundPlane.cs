@@ -10,6 +10,15 @@ public class RepeatedGroundPlane : MonoBehaviour
 
     private Vector3 repeatPos = new Vector3(0, 0, 170);
 
+    private void Start()
+    {
+        GameManager.Instance.OnGameStop += Instance_OnGameStop;
+    }
+
+    private void Instance_OnGameStop(object sender, System.EventArgs e)
+    {
+        StopMovement();
+    }
 
     private void Update()
     {
@@ -38,5 +47,10 @@ public class RepeatedGroundPlane : MonoBehaviour
             }
            
         }     
+    }
+
+    private void StopMovement()
+    {
+        _speed = 0;
     }
 }

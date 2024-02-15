@@ -23,6 +23,12 @@ public class Player : MonoBehaviour
     public event EventHandler OnSlideMade;
     public event EventHandler OnSlideEnd;
     public event EventHandler OnGroundHit;
+    public event EventHandler OnPlayerHealthDepleted;
+    public event EventHandler OnWallCrash;
+    public event EventHandler OnHealthChanged;
+
+    private int _playerHealth = 3;
+
 
     //henüz kullanmadým ama düþünücem
     public event EventHandler<OnPlayerStateChangedEventArgs> OnPlayerStateChanged;  
@@ -61,9 +67,38 @@ public class Player : MonoBehaviour
         _playerCollisionDetection.OnGroundHit += _playerCollisionDetection_OnGroundHit;
         _playerCollisionDetection.OnRampContact += _playerCollisionDetection_OnRampContact;
         _playerCollisionDetection.OnGroundContactLost += _playerCollisionDetection_OnGroundContactLost;
+        _playerCollisionDetection.OnWallObstacleHit += _playerCollisionDetection_OnWallObstacleHit;
+        _playerCollisionDetection.OnObstacleHit += _playerCollisionDetection_OnObstacleHit;
 
         _playerState = PlayerState.Running;
- 
+        
+    }
+
+    private void _playerCollisionDetection_OnObstacleHit(object sender, EventArgs e)
+    {
+        _playerHealth -= 1;
+        OnHealthChanged?.Invoke(this, EventArgs.Empty);
+
+        if (_playerHealth == 0)
+        {
+            OnPlayerHealthDepleted?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public int PlayerHealthAmount()
+    {
+        return _playerHealth;
+    }
+
+    private void PlayerHealtDepleted()
+    {
+        OnPlayerHealthDepleted?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void _playerCollisionDetection_OnWallObstacleHit(object sender, EventArgs e)
+    {
+        OnWallCrash?.Invoke(this, EventArgs.Empty);
+        PlayerHealtDepleted();
     }
 
     private void _playerCollisionDetection_OnGroundContactLost(object sender, EventArgs e)
@@ -82,6 +117,8 @@ public class Player : MonoBehaviour
 
     private void _gameInput_OnSlideUnderAction(object sender, System.EventArgs e)
     {
+        if(GameManager.Instance.IsGameOver()) return; 
+
         if (IsCharacterOnTheTrack() && IsPlayerRunning())
         {
             _playerState = PlayerState.Sliding;
@@ -92,6 +129,8 @@ public class Player : MonoBehaviour
 
     private void _gameInput_OnJumpAction(object sender, System.EventArgs e)
     {
+        if (GameManager.Instance.IsGameOver()) return;
+
         if (IsCharacterOnTheTrack() && IsPlayerRunning())
         {
             _playerState = PlayerState.Jumping;
@@ -112,6 +151,7 @@ public class Player : MonoBehaviour
 
     private void _gameInput_OnGoRightAction(object sender, System.EventArgs e)
     {
+        if (GameManager.Instance.IsGameOver()) return;
 
         if (IsCharacterOnTheTrack())
         {
@@ -121,6 +161,8 @@ public class Player : MonoBehaviour
 
     private void _gameInput_OnGoLeftAction(object sender, System.EventArgs e)
     {
+        if (GameManager.Instance.IsGameOver()) return;
+
         if (IsCharacterOnTheTrack())
         {
             MoveBetweenLanes(Direction.Left);

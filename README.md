@@ -90,5 +90,7 @@ select sound - https://pixabay.com/sound-effects/select-sound-121244/
 
 UI: 
 
+heart pixel art - https://opengameart.org/content/heart-pixel-art
+
 UI - Cartoon Mobile Rounded Icon Buttons - NathanLovatoArt - https://opengameart.org/content/cartoon-mobile-rounded-icon-buttons
 

@@ -20,6 +20,12 @@ public class PlayerAnimator : MonoBehaviour
         player.OnSlideMade += Player_OnSlideMade;
         player.OnSlideEnd += Player_OnSlideEnd;
         player.OnGroundHit += Player_OnGroundHit;
+        player.OnWallCrash += Player_OnWallCrash;
+    }
+
+    private void Player_OnWallCrash(object sender, System.EventArgs e)
+    {
+        animator.SetTrigger("Crashwall_trigger");
     }
 
     private void Player_OnGroundHit(object sender, System.EventArgs e)

@@ -9,6 +9,8 @@ public class PlayerCollisionDetection : MonoBehaviour
     public event EventHandler OnGroundHit;
     public event EventHandler OnRampContact;
     public event EventHandler OnGroundContactLost;
+    public event EventHandler OnWallObstacleHit;
+    public event EventHandler OnObstacleHit;
     private bool _isGroundContactLost = false;
     
     // Start is called before the first frame update
@@ -36,17 +38,22 @@ public class PlayerCollisionDetection : MonoBehaviour
     {
         if (other.gameObject.CompareTag("SlideObstacle"))
         {
-            Debug.Log("SlideObstacle");
+            if (Player.Instance.IsPlayerSliding()) return;
+
+            OnObstacleHit?.Invoke(this, EventArgs.Empty);
+
         }
 
         if (other.gameObject.CompareTag("JumpObstacle"))
         {
-            Debug.Log("JumpObstacle");
+            if (Player.Instance.IsPlayerJumping()) return;
+
+            OnObstacleHit?.Invoke(this, EventArgs.Empty);
         }
 
         if (other.gameObject.CompareTag("WallObstacle"))
         {
-            Debug.Log("WallObstacle");
+            OnWallObstacleHit?.Invoke(this, EventArgs.Empty);
         }
 
         if (other.gameObject.CompareTag("Platform"))
