@@ -13,6 +13,19 @@ public class RepeatedGroundPlane : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnGameEnd += Instance_OnGameEnd;
+
+        //this is for adapting the speed, naming isnt intuative, I know. Maybe a seperate 
+        GameManager.Instance.OnScoreMultiplierChanged += GameManager_OnScoreMultiplierChanged;
+    }
+
+    private void GameManager_OnScoreMultiplierChanged(object sender, System.EventArgs e)
+    {
+        _speedModifier = GameManager.Instance.GetSpeedModifier();
+    }
+
+    private void GameManager_OnScoreChanged(object sender, GameManager.OnScoreChangedEventArgs e)
+    {
+        throw new System.NotImplementedException();
     }
 
     private void Instance_OnGameEnd(object sender, System.EventArgs e)

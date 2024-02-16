@@ -21,6 +21,13 @@ public class PlayerAnimator : MonoBehaviour
         player.OnSlideEnd += Player_OnSlideEnd;
         player.OnGroundHit += Player_OnGroundHit;
         player.OnWallCrash += Player_OnWallCrash;
+        GameManager.Instance.OnScoreMultiplierChanged += Instance_OnScoreMultiplierChanged;
+    }
+
+    private void Instance_OnScoreMultiplierChanged(object sender, System.EventArgs e)
+    {
+        float animationSpeed = GameManager.Instance.GetSpeedModifier();
+        animator.speed = animationSpeed;
     }
 
     private void Player_OnWallCrash(object sender, System.EventArgs e)

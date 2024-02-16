@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class GameManager : MonoBehaviour
 {
@@ -149,6 +150,30 @@ public class GameManager : MonoBehaviour
         {
             currentScore = _highScoreSession
         });
+    }
+
+    public float GetSpeedModifier()
+    {
+        //this returns something in between 1 and 2, so game can only get 2 times fast compared to the beggining state,
+        //the speed motifier is based on score multiplier for x1 multiplier speed is 1x normal speed, for x5(max) score multiplier, speed is 2x the original.
+        float clampedMultiplier = Mathf.Clamp(_scoreMultiplier, 100, 500);
+
+        // Map the score multiplier to the speed modifier
+        if (clampedMultiplier >= 100 && clampedMultiplier < 500)
+        {
+            // For scoreMultiplier between 100 and 499, return a value between 1 and 2 linearly.
+            return 1 + (clampedMultiplier - 100) / 400f;
+        }
+        else if (clampedMultiplier >= 500)
+        {
+            // For scoreMultiplier equal to or greater than 500, return 2.
+            return 2f;
+        }
+        else
+        {
+            // This case handles when scoreMultiplier is less than 100 (not expected, but handled for safety).
+            return 1f;
+        }
     }
 
     public float GetScoreMultiplier()
