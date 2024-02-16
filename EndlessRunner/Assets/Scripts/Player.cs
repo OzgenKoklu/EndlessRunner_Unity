@@ -26,8 +26,10 @@ public class Player : MonoBehaviour
     public event EventHandler OnPlayerHealthDepleted;
     public event EventHandler OnWallCrash;
     public event EventHandler OnPlayerHealthDecreased;
+    public event EventHandler OnInvincibilityPeriodEnd;
 
     private int _playerHealth = 3;
+    private bool _isInvincible;
 
 
     //henüz kullanmadým ama düþünücem
@@ -72,18 +74,40 @@ public class Player : MonoBehaviour
         _playerCollisionDetection.OnObstacleHit += _playerCollisionDetection_OnObstacleHit;
 
         _playerState = PlayerState.Running;
-        
+         _isInvincible = false ;
+
     }
 
     private void _playerCollisionDetection_OnObstacleHit(object sender, EventArgs e)
     {
-        _playerHealth -= 1;
-        OnPlayerHealthDecreased?.Invoke(this, EventArgs.Empty);
-
-        if (_playerHealth == 0)
+        if(!_isInvincible)
         {
-            OnPlayerHealthDepleted?.Invoke(this, EventArgs.Empty);
-        }
+            _playerHealth -= 1;
+            OnPlayerHealthDecreased?.Invoke(this, EventArgs.Empty);
+
+            if (_playerHealth == 0)
+            {
+                //actually I invoked this event to avoid blinking when character dies from losing hearts but I think it is not intuative to do it like this
+                OnInvincibilityPeriodEnd?.Invoke(this, EventArgs.Empty);
+                OnWallCrash?.Invoke(this, EventArgs.Empty);
+                OnPlayerHealthDepleted?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                StartCoroutine(StartInvincibilityPeriod(1.5f)); // 1.5 second invinsibility period
+            }
+        }       
+    }
+
+    private IEnumerator StartInvincibilityPeriod(float duration)
+    {
+        _isInvincible = true;
+
+        yield return new WaitForSeconds(duration);
+
+        _isInvincible = false;
+        // after the duration, event is triggered
+        OnInvincibilityPeriodEnd?.Invoke(this, EventArgs.Empty);
     }
 
     public int PlayerHealthAmount()

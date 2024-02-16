@@ -39,7 +39,7 @@ public class GameSceneUI: MonoBehaviour
     private void GameManager_OnScoreMultiplierChanged(object sender, System.EventArgs e)
     {
         float scoreMultiplier = GameManager.Instance.GetScoreMultiplier();
-        if(scoreMultiplier > 1f && scoreMultiplier < 1.5f)
+        if(scoreMultiplier >= 1f && scoreMultiplier < 1.5f)
         {
             _scoreMultiplierText.color = Color.white;
         }

@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     private float _gameScore = 0;
     private float _scoreMultiplier = 100;
 
+
     private float _multiplierTimer = 0;
 
 
