@@ -43,11 +43,11 @@ PNG 3:
 ## Videos
 
 
-??.02.2024 working build: 
+16.02.2024 working build: 
 
-Comment
+Main functions complete, buggy and "game feel" is bad. 
 
-[![Youtube Link](https://img.youtube.com/vi/YTLINKNOTAWAILABLE/0.jpg)](https://youtu.be/YTLINKNOTAWAILABLE)
+[![Youtube Link](https://img.youtube.com/vi/NwwSOqZ5ZHA/0.jpg)](https://youtu.be/NwwSOqZ5ZHA)
 
 
 ----------

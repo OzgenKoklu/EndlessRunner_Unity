@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
     public event EventHandler OnGroundHit;
     public event EventHandler OnPlayerHealthDepleted;
     public event EventHandler OnWallCrash;
-    public event EventHandler OnHealthChanged;
+    public event EventHandler OnPlayerHealthDecreased;
 
     private int _playerHealth = 3;
 
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
     private void _playerCollisionDetection_OnObstacleHit(object sender, EventArgs e)
     {
         _playerHealth -= 1;
-        OnHealthChanged?.Invoke(this, EventArgs.Empty);
+        OnPlayerHealthDecreased?.Invoke(this, EventArgs.Empty);
 
         if (_playerHealth == 0)
         {

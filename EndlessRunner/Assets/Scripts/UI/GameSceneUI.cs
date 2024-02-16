@@ -12,6 +12,7 @@ public class GameSceneUI: MonoBehaviour
     [SerializeField] private TextMeshProUGUI _scoreText;
     [SerializeField] private TextMeshProUGUI _newHighText;
     [SerializeField] private Button _pauseGameButton;
+    [SerializeField] private TextMeshProUGUI _scoreMultiplierText;
 
     private void Awake()
     {
@@ -22,16 +23,39 @@ public class GameSceneUI: MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Player.Instance.OnHealthChanged += Player_OnHealthChanged;
+        Player.Instance.OnPlayerHealthDecreased += Player_OnHealthChanged;
         GameManager.Instance.OnScoreChanged += Instance_OnScoreChanged;
         GameManager.Instance.OnHighScoreBeaten += Instance_OnHighScoreBeaten;
         GameManager.Instance.OnGameEnd += GameManager_OnGameEnd;
+        GameManager.Instance.OnScoreMultiplierChanged += GameManager_OnScoreMultiplierChanged;
         UpdateVisual();
 
         _pauseGameButton.onClick.AddListener(() =>
         {
             GameManager.Instance.PauseGame();
         });
+    }
+
+    private void GameManager_OnScoreMultiplierChanged(object sender, System.EventArgs e)
+    {
+        float scoreMultiplier = GameManager.Instance.GetScoreMultiplier();
+        if(scoreMultiplier > 1f && scoreMultiplier < 1.5f)
+        {
+            _scoreMultiplierText.color = Color.white;
+        }
+        else if(scoreMultiplier >= 1.5f && scoreMultiplier < 3.5f)
+        {
+            _scoreMultiplierText.color = Color.yellow;
+        }
+        else if(scoreMultiplier >= 3.5 && scoreMultiplier <4.5f)
+        {
+            _scoreMultiplierText.color = Color.red;
+        }
+        else
+        {
+            _scoreMultiplierText.color = Color.cyan;
+        }
+        _scoreMultiplierText.text = "X" + scoreMultiplier.ToString();
     }
 
     private void GameManager_OnGameEnd (object sender, GameManager.OnGameEndEventArgs e)
