@@ -12,10 +12,10 @@ public class RepeatedGroundPlane : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnGameStop += Instance_OnGameStop;
+        GameManager.Instance.OnGameEnd += Instance_OnGameEnd;
     }
 
-    private void Instance_OnGameStop(object sender, System.EventArgs e)
+    private void Instance_OnGameEnd(object sender, System.EventArgs e)
     {
         StopMovement();
     }

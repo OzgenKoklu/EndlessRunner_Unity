@@ -44,6 +44,7 @@ public class Player : MonoBehaviour
         Running,
         Sliding,
         Jumping,
+        GameOver,
     }
 
     public enum Direction
@@ -118,6 +119,7 @@ public class Player : MonoBehaviour
     private void _gameInput_OnSlideUnderAction(object sender, System.EventArgs e)
     {
         if(GameManager.Instance.IsGameOver()) return; 
+        if(GameManager.Instance.IsGamePaused()) return;
 
         if (IsCharacterOnTheTrack() && IsPlayerRunning())
         {
@@ -130,6 +132,7 @@ public class Player : MonoBehaviour
     private void _gameInput_OnJumpAction(object sender, System.EventArgs e)
     {
         if (GameManager.Instance.IsGameOver()) return;
+        if (GameManager.Instance.IsGamePaused()) return;
 
         if (IsCharacterOnTheTrack() && IsPlayerRunning())
         {
@@ -152,6 +155,7 @@ public class Player : MonoBehaviour
     private void _gameInput_OnGoRightAction(object sender, System.EventArgs e)
     {
         if (GameManager.Instance.IsGameOver()) return;
+        if (GameManager.Instance.IsGamePaused()) return;
 
         if (IsCharacterOnTheTrack())
         {
@@ -162,6 +166,7 @@ public class Player : MonoBehaviour
     private void _gameInput_OnGoLeftAction(object sender, System.EventArgs e)
     {
         if (GameManager.Instance.IsGameOver()) return;
+        if (GameManager.Instance.IsGamePaused()) return;
 
         if (IsCharacterOnTheTrack())
         {
