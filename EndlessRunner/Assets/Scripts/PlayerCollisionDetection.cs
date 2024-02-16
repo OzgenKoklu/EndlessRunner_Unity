@@ -11,6 +11,7 @@ public class PlayerCollisionDetection : MonoBehaviour
     public event EventHandler OnGroundContactLost;
     public event EventHandler OnWallObstacleHit;
     public event EventHandler OnObstacleHit;
+    public event EventHandler OnCoinGrabbed;
     private bool _isGroundContactLost = false;
     
     // Start is called before the first frame update
@@ -42,6 +43,17 @@ public class PlayerCollisionDetection : MonoBehaviour
 
             OnObstacleHit?.Invoke(this, EventArgs.Empty);
 
+        }
+
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            //object pooling için bu coin baþka bir yere taþýnabilir.
+            CoinBehaviour coinBehaviour = other.GetComponent<CoinBehaviour>();
+
+            //Not as intuative since they all go to 0,5,0 relative to their perant object. Not good practice.
+            coinBehaviour.GoToObjectPoolLocation();
+
+            OnCoinGrabbed?.Invoke(this , EventArgs.Empty);  
         }
 
         if (other.gameObject.CompareTag("JumpObstacle"))

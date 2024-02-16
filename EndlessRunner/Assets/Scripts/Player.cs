@@ -25,10 +25,12 @@ public class Player : MonoBehaviour
     public event EventHandler OnGroundHit;
     public event EventHandler OnPlayerHealthDepleted;
     public event EventHandler OnWallCrash;
+    public event EventHandler OnCoinCountChanged;
     public event EventHandler OnPlayerHealthDecreased;
     public event EventHandler OnInvincibilityPeriodEnd;
 
     private int _playerHealth = 3;
+    private int _playerCoinCount;
     private bool _isInvincible;
 
 
@@ -72,10 +74,18 @@ public class Player : MonoBehaviour
         _playerCollisionDetection.OnGroundContactLost += _playerCollisionDetection_OnGroundContactLost;
         _playerCollisionDetection.OnWallObstacleHit += _playerCollisionDetection_OnWallObstacleHit;
         _playerCollisionDetection.OnObstacleHit += _playerCollisionDetection_OnObstacleHit;
+        _playerCollisionDetection.OnCoinGrabbed += _playerCollisionDetection_OnCoinGrabbed;
 
         _playerState = PlayerState.Running;
          _isInvincible = false ;
+        _playerCoinCount = 0;
+        OnCoinCountChanged?.Invoke(this, EventArgs.Empty);
+    }
 
+    private void _playerCollisionDetection_OnCoinGrabbed(object sender, EventArgs e)
+    {
+        _playerCoinCount += 1; 
+        OnCoinCountChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void _playerCollisionDetection_OnObstacleHit(object sender, EventArgs e)
@@ -258,6 +268,11 @@ public class Player : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public int GetPlayerCoinCount()
+    {
+        return _playerCoinCount;
     }
 
     public bool IsPlayerOnUpperPlane()

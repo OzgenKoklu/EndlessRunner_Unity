@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
     {
         Player.Instance.OnPlayerHealthDepleted += Instance_OnGameOver;
         Player.Instance.OnPlayerHealthDecreased += Player_OnHealthDecreased;
+        
+       
     }
 
     private void Player_OnHealthDecreased(object sender, EventArgs e)

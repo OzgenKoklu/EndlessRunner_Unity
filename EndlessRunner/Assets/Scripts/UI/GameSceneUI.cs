@@ -13,6 +13,7 @@ public class GameSceneUI: MonoBehaviour
     [SerializeField] private TextMeshProUGUI _newHighText;
     [SerializeField] private Button _pauseGameButton;
     [SerializeField] private TextMeshProUGUI _scoreMultiplierText;
+    [SerializeField] private TextMeshProUGUI _coinCountText;
 
     private void Awake()
     {
@@ -24,6 +25,7 @@ public class GameSceneUI: MonoBehaviour
     void Start()
     {
         Player.Instance.OnPlayerHealthDecreased += Player_OnHealthChanged;
+        Player.Instance.OnCoinCountChanged += PLayer_OnCoinCountChanged;
         GameManager.Instance.OnScoreChanged += Instance_OnScoreChanged;
         GameManager.Instance.OnHighScoreBeaten += Instance_OnHighScoreBeaten;
         GameManager.Instance.OnGameEnd += GameManager_OnGameEnd;
@@ -34,6 +36,12 @@ public class GameSceneUI: MonoBehaviour
         {
             GameManager.Instance.PauseGame();
         });
+    }
+
+    private void PLayer_OnCoinCountChanged(object sender, System.EventArgs e)
+    {
+        int playerCoinCount = Player.Instance.GetPlayerCoinCount();
+        _coinCountText.text = playerCoinCount.ToString();
     }
 
     private void GameManager_OnScoreMultiplierChanged(object sender, System.EventArgs e)

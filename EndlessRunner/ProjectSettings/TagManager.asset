@@ -11,6 +11,7 @@ TagManager:
   - SlideObstacle
   - WallObstacle
   - JumpObstacle
+  - Coin
   layers:
   - Default
   - TransparentFX
