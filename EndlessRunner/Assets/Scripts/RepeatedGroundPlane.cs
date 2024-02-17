@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RepeatedGroundPlane : MonoBehaviour
 {
-    private float _speed = 20;
+    private float _speed = 10;
     private int _backwardBoundry = -40;
     private float _speedModifier = 1;
 

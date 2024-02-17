@@ -73,8 +73,11 @@ public class PlayerCollisionDetection : MonoBehaviour
             _isGroundContactLost = false;
         }
 
+
+        //this is problematic
         if (Player.Instance.IsPlayerJumping())
         {
+
             OnGroundHit?.Invoke(this, EventArgs.Empty);   
             Debug.Log("Triggered is grounded");
         }
