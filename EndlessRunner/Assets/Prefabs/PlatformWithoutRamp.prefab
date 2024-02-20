@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pivotOffset: {x: -1.08, y: 0, z: 0}
+  _pivotOffset: {x: -1.05, y: 0, z: 0}
 --- !u!1 &6651942384477978915
 GameObject:
   m_ObjectHideFlags: 0

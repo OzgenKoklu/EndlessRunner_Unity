@@ -41,15 +41,28 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (Vector3 lanePosition in new Vector3[] { _leftLanePosition, _middleLanePosition, _rightLanePosition })
         {
+            float minZposition = -5;
+
             foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
             {
+                
                 if (Random.value < 0.5f) // Adjust this threshold according to your needs
                 {
                     // Randomly select a level object from the list
-                   // LevelObjectSO levelObject = _levelObjectListSO.levelObjectSOList[Random.Range(0, _levelObjectListSO.levelObjectSOList.Count)];
+                    // LevelObjectSO levelObject = _levelObjectListSO.levelObjectSOList[Random.Range(0, _levelObjectListSO.levelObjectSOList.Count)];
 
-                    float zPosition = CalculateSpawnPosition(levelObject);
+
+                    bool changeMinPos;
+                    float zPosition = CalculateSpawnPosition(levelObject, minZposition,out changeMinPos);
+                    Debug.Log(changeMinPos);
+                   
+                    Debug.Log("Min z position for lane: " + lanePosition + " and Level object : " +levelObject.name + ", PositionZ:" + minZposition);
+                    if (changeMinPos)
+                    {
+                        minZposition += zPosition + levelObject.ObjectSpawnBlockLenght;
+                    }
                     
+                    if (zPosition == -10) continue;
 
                     // Calculate the spawn position relative to the ground plane's local space
                     Vector3 spawnPosition = groundPlaneTransform.TransformPoint(lanePosition + new Vector3(0, 0, zPosition));
@@ -66,7 +79,7 @@ public class LevelGenerator : MonoBehaviour
 
 
     
-    private void PopulateLane(Vector3 lanePosition)
+    private void PopulateLaneWithPlatforms(Vector3 lanePosition)
     {
         // Define initial spawn position
         Vector3 spawnPosition = lanePosition;
@@ -86,12 +99,64 @@ public class LevelGenerator : MonoBehaviour
         }
     }
 
-    float CalculateSpawnPosition(LevelObjectSO levelObjectSO)
+    private void PopulateLaneWithObstacles(Vector3 lanePosition)
     {
-        
+        // Define initial spawn position
+        Vector3 spawnPosition = lanePosition;
 
-        float maxZPosition = 5 - levelObjectSO.ObjectSpawnBlockLenght; // Max Z position considering the object spawn block length
-        float zPosition = Random.Range(-5, maxZPosition);
+        // Randomly select objects from the levelObjectListSO and instantiate them along the lane
+        foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
+        {
+            // Randomly determine if the object should be spawned
+            if (Random.value < 0.5f) // Adjust this threshold according to your needs
+            {
+                // Instantiate the object
+                Instantiate(levelObject.Prefab, spawnPosition, Quaternion.identity);
+
+                // Update spawn position for the next object
+                spawnPosition.z += levelObject.ObjectSpawnBlockLenght + _spawnOffset;
+            }
+        }
+    }
+
+    private void PopulateLaneWithCollectibles(Vector3 lanePosition)
+    {
+        // Define initial spawn position
+        Vector3 spawnPosition = lanePosition;
+
+        // Randomly select objects from the levelObjectListSO and instantiate them along the lane
+        foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
+        {
+            // Randomly determine if the object should be spawned
+            if (Random.value < 0.5f) // Adjust this threshold according to your needs
+            {
+                // Instantiate the object
+                Instantiate(levelObject.Prefab, spawnPosition, Quaternion.identity);
+
+                // Update spawn position for the next object
+                spawnPosition.z += levelObject.ObjectSpawnBlockLenght + _spawnOffset;
+            }
+        }
+    }
+
+    float CalculateSpawnPosition(LevelObjectSO levelObjectSO, float minZposition, out bool changeMinPos)
+    {
+
+        //5 = end of the plane, I know magic numbers are bad
+        float maxZPosition = 5;  // Max Z position considering the object spawn block length
+        //float maxZPosition = 5 - levelObjectSO.ObjectSpawnBlockLenght; // Max Z position considering the object spawn block length
+        if (maxZPosition < minZposition)
+        {
+            changeMinPos = false;
+            return -10;
+            
+        }
+
+        float zPosition = Random.Range(minZposition, maxZPosition);
+
+
+
+        changeMinPos = true;
         return zPosition;
     }
 

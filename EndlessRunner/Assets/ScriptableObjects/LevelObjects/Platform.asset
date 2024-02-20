@@ -15,4 +15,4 @@ MonoBehaviour:
   Prefab: {fileID: 5746704881436448426, guid: f434b0398f42cb3469a8ae999c9168ca, type: 3}
   Kind: 2
   ObjectName: Platform
-  ObjectSpawnBlockLenght: 5
+  ObjectSpawnBlockLenght: 6
