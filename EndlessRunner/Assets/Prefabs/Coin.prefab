@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6891044609138134841}
   - component: {fileID: 5047594152254546969}
   - component: {fileID: 6051265291110236383}
+  - component: {fileID: -3611758294597768975}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Coin
@@ -34,7 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2839728884387605471
 MeshFilter:
@@ -133,3 +134,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ef45cfc90e64524ba7dcba571ce3188, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3611758294597768975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3029782315669219994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pivotOffset: {x: 0, y: 0.5, z: 0}

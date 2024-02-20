@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5965731595578112132}
   - component: {fileID: 5099875256315259188}
   - component: {fileID: 1102121828025709857}
+  - component: {fileID: 6742597422867423106}
   m_Layer: 0
   m_Name: Obstacle_Box
   m_TagString: JumpObstacle
@@ -27,12 +28,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5662577579595787198}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.2209196, y: 0.58, z: 5.858204}
+  m_LocalPosition: {x: -2.2209196, y: 0.6643, z: 5.858204}
   m_LocalScale: {x: 0.14285712, y: 0.14285712, z: 0.14285712}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5965731595578112132
 MeshFilter:
@@ -106,3 +107,16 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 8dca5595cdaced544b3bca78ca84e8d8, type: 3}
+--- !u!114 &6742597422867423106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662577579595787198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pivotOffset: {x: 0, y: 0.5, z: 0}

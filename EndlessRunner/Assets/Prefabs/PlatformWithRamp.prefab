@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6936935754449903905}
+  - component: {fileID: 4995997771288056516}
   m_Layer: 0
   m_Name: PlatformWithRamp
   m_TagString: Platform
@@ -24,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097874212122855823}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.32, y: 0.07000017, z: 4.86}
+  m_LocalPosition: {x: 1.7, y: 0.07000017, z: 4.86}
   m_LocalScale: {x: 0.14285712, y: 0.14285712, z: 0.14285712}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -32,8 +33,21 @@ Transform:
   - {fileID: 5327914332164453216}
   - {fileID: 959843504858500530}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4995997771288056516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097874212122855823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pivotOffset: {x: -1.1, y: 0, z: 0}
 --- !u!1 &3685932985751404102
 GameObject:
   m_ObjectHideFlags: 0

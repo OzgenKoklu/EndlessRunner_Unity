@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6551085432494376911}
+  - component: {fileID: 3952491929674074584}
   m_Layer: 0
   m_Name: Obstacle_Cones
   m_TagString: JumpObstacle
@@ -24,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 820467935722997091}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.07, y: 0.069999695, z: 4.82}
+  m_LocalPosition: {x: 0.07, y: 0.1537, z: 4.82}
   m_LocalScale: {x: 0.14285712, y: 0.14285712, z: 0.14285712}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -32,8 +33,21 @@ Transform:
   - {fileID: 7578403417191145659}
   - {fileID: 2032239880938936484}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3952491929674074584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820467935722997091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pivotOffset: {x: 0, y: 0.1, z: 0}
 --- !u!1001 &1964882142519662130
 PrefabInstance:
   m_ObjectHideFlags: 0
