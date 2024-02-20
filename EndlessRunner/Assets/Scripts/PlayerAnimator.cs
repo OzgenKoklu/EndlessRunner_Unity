@@ -21,7 +21,13 @@ public class PlayerAnimator : MonoBehaviour
         player.OnSlideEnd += Player_OnSlideEnd;
         player.OnGroundHit += Player_OnGroundHit;
         player.OnWallCrash += Player_OnWallCrash;
+        player.OnPlayerFalling += Player_OnPlayerFalling;
         GameManager.Instance.OnScoreMultiplierChanged += Instance_OnScoreMultiplierChanged;
+    }
+
+    private void Player_OnPlayerFalling(object sender, System.EventArgs e)
+    {
+        animator.SetTrigger("Fall_trigger");
     }
 
     private void Instance_OnScoreMultiplierChanged(object sender, System.EventArgs e)

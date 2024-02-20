@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9062325772296497162}
   - component: {fileID: 5956342359054412573}
   m_Layer: 0
-  m_Name: PlatformWithutRamp
+  m_Name: PlatformWithoutRamp
   m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

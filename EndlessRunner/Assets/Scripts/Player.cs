@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private Vector3 _leftLanePosition = new Vector3(-2.3f, 0, 0);
     private Vector3 _middleLanePosition = new Vector3(0, 0, 0); 
     private Vector3 _rightLanePosition = new Vector3(2.3f, 0, 0);
+
     private Vector3 _upperPlanePosition = new Vector3(0, 2f, 0);
     private Vector3 _lowerPlanePosition = new Vector3(0, 0, 0);
 
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour
     public event EventHandler OnGroundHit;
     public event EventHandler OnPlayerHealthDepleted;
     public event EventHandler OnWallCrash;
+    public event EventHandler OnPlayerFalling;
     public event EventHandler OnCoinCountChanged;
     public event EventHandler OnPlayerHealthDecreased;
     public event EventHandler OnInvincibilityPeriodEnd;
@@ -47,6 +49,7 @@ public class Player : MonoBehaviour
     private float _jumpHeight = 1.5f; // Height to jump
     private float _jumpSpeed = 3f;
 
+    private bool _isPlayerInTransition = false;
 
     //henüz kullanmadým ama düþünücem
     public event EventHandler<OnPlayerStateChangedEventArgs> OnPlayerStateChanged;  
@@ -133,6 +136,21 @@ public class Player : MonoBehaviour
             yield return null;
         }
 
+        //this is to avoid player staying in the air
+        if(_playerState == PlayerState.Jumping)
+        {
+            //player still didnt make any contact with ground lets trigger fall animation
+            OnPlayerFalling?.Invoke(this, EventArgs.Empty);
+            Vector3 newTargetPosition = FindClosestPath();
+            elapsedTime = 0f;
+            while (elapsedTime < 1f)
+            {
+                transform.position = Vector3.Lerp(_originalPosition, newTargetPosition, elapsedTime);
+                elapsedTime += Time.deltaTime * _jumpSpeed; // Adjust jump speed as needed
+                yield return null;
+            }
+            
+        }
         // Reset jumping state after completing the jump
         _isJumping = false;
     }
@@ -233,7 +251,7 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGameOver()) return;
         if (GameManager.Instance.IsGamePaused()) return;
 
-        if (IsCharacterOnTheTrack() && IsPlayerRunning())
+        if (IsCharacterOnTheTrack() && IsPlayerRunning() && !IsPlayerJumping() && !_isJumping)
         {
             _playerState = PlayerState.Jumping;
             Jump();
@@ -257,9 +275,9 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGameOver()) return;
         if (GameManager.Instance.IsGamePaused()) return;
 
-        if (IsCharacterOnTheTrack())
+        if (IsCharacterOnTheTrack() && !IsPlayerJumping())
         {
-            MoveBetweenLanes(Direction.Right);
+            SelectMovePosition(Direction.Right);
         }      
     }
 
@@ -268,13 +286,13 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGameOver()) return;
         if (GameManager.Instance.IsGamePaused()) return;
 
-        if (IsCharacterOnTheTrack())
+        if (IsCharacterOnTheTrack() && !IsPlayerJumping())
         {
-            MoveBetweenLanes(Direction.Left);
+            SelectMovePosition(Direction.Left);
         }     
     }
-
-    private void MoveBetweenLanes(Direction direction)
+    
+    private void SelectMovePosition(Direction direction)
     {
        switch(direction)
        {
@@ -291,12 +309,14 @@ public class Player : MonoBehaviour
                     Vector3 _newCharacterPosition = new Vector3(_middleLanePosition.x, transform.position.y, transform.position.z);
                     _targetPosition = _newCharacterPosition;
                     _isMoving = true;
+                    OnJumpMade?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
                     Vector3 _newCharacterPosition = new Vector3(_leftLanePosition.x, transform.position.y, transform.position.z);
                     _targetPosition = _newCharacterPosition;
                     _isMoving = true;
+                    OnJumpMade?.Invoke(this, EventArgs.Empty);
                 }
             break;
             case Direction.Right:
@@ -312,12 +332,14 @@ public class Player : MonoBehaviour
                     Vector3 _newCharacterPosition = new Vector3(_middleLanePosition.x, transform.position.y, transform.position.z);
                     _targetPosition = _newCharacterPosition;
                     _isMoving = true;
+                    OnJumpMade?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
                     Vector3 _newCharacterPosition = new Vector3(_rightLanePosition.x, transform.position.y, transform.position.z);
                     _targetPosition = _newCharacterPosition;
                     _isMoving = true;
+                    OnJumpMade?.Invoke(this, EventArgs.Empty);
                 }
 
                 break;
@@ -351,6 +373,8 @@ public class Player : MonoBehaviour
 
         if (_isMoving)
         {
+            //maybe select a better animation and event for jumping between lanes.
+            
             // Calculate the distance between current position and target position
             float distance = Vector3.Distance(transform.position, _targetPosition);
 
@@ -366,8 +390,10 @@ public class Player : MonoBehaviour
             else
             {
                 transform.position = _targetPosition;
+
                 // If the character is close enough to the target position, stop moving
                 _isMoving = false;
+                OnGroundHit?.Invoke(this, EventArgs.Empty);
             }
         }      
     }
@@ -398,6 +424,14 @@ public class Player : MonoBehaviour
 
     private void MoveCharacterToTrack()
     {
+
+        Vector3 newTargetPosition = FindClosestPath();
+        // Smoothly move the character towards the target position using Lerp
+        transform.position = Vector3.Lerp(transform.position, newTargetPosition, Time.deltaTime * _playerSpeed);
+    }
+
+    private Vector3 FindClosestPath()
+    {
         float distanceToLeftTrack = Vector3.Distance(transform.position, _leftLanePosition);
         float distanceToMiddleTrack = Vector3.Distance(transform.position, _middleLanePosition);
         float distanceToRightTrack = Vector3.Distance(transform.position, _rightLanePosition);
@@ -406,23 +440,31 @@ public class Player : MonoBehaviour
         float minDistance = Mathf.Min(distanceToLeftTrack, distanceToMiddleTrack, distanceToRightTrack);
 
         // Set the target position based on the nearest track
-        Vector3 newTargetPosition = transform.position;
+        Vector3 closesetTargetPosition = transform.position;
 
         if (minDistance == distanceToLeftTrack)
         {
-            newTargetPosition = _leftLanePosition;
+            closesetTargetPosition = _leftLanePosition;
         }
         else if (minDistance == distanceToMiddleTrack)
         {
-            newTargetPosition = _middleLanePosition;
+            closesetTargetPosition = _middleLanePosition;
         }
         else if (minDistance == distanceToRightTrack)
         {
-            newTargetPosition = _rightLanePosition;
+            closesetTargetPosition = _rightLanePosition;
         }
+        return closesetTargetPosition;
+    }
 
-        // Smoothly move the character towards the target position using Lerp
-        transform.position = Vector3.Lerp(transform.position, newTargetPosition, Time.deltaTime * _playerSpeed);
+    public bool IsPlayerInTransition()
+    {
+        return _isPlayerInTransition;
+    }
+
+    public void SetPlayerTransition(bool isPlayerInTransition)
+    {
+        _isPlayerInTransition = isPlayerInTransition;
     }
 
     private bool IsCharacterOnTheTrack()
