@@ -10,6 +10,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private LevelObjectSO _platformSO;
     [SerializeField] private LevelObjectSO _platformWithRampSO;
     [SerializeField] private List<LevelObjectSO> _obstacleList;
+    [SerializeField] private LevelObjectSO _collectableCoin;
 
 
 
@@ -72,6 +73,7 @@ public class LevelGenerator : MonoBehaviour
         // Populate the map with platforms and ramps
         PopulateMapWithRampsAndPlatforms();
         PopulateMapWithObstacles();
+        
         GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
         GenerateLevelWithMapData(groundPlane.transform);
     }
@@ -116,6 +118,66 @@ public class LevelGenerator : MonoBehaviour
 
         // Ensure at least one lane is passable on the ground level
         EnsureGroundPassable();
+    }
+
+    private void PopulateMapWithCollectibles(Transform groundPlaneTransform)
+    {
+        // This can happen after the map is generated since collectibles won't be hardcoded into segment area with an enum; they will spawn on top of the ramps and platforms
+        bool coinLimitAchieved = false;
+        //to ensure only one string of coins occur in the generated map
+        bool notSpawnedInThisSegment = true;
+        int coinCount = 0;
+        float segmentSize = 10f / _mapData.GetLength(1);
+
+        for (int j = 0; j < _mapData.GetLength(1); j++)
+        {
+            notSpawnedInThisSegment = true;
+            for (int i = 0; i < _mapData.GetLength(0); i++)
+            {              
+                // If this segment is a ramp OR the segment before this is not empty (meaning that it can be after an obstacle or after a ramp/platform), spawn coins if RNG sees it fit
+                //if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || !IsCrossNeighborSegmentEmpty(i, j, 0, -1))
+                if ((_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Obstacle) && notSpawnedInThisSegment)
+                {
+                    if (RandomShouldAddCollectable() && !coinLimitAchieved && coinCount < 15)
+                    {
+                        notSpawnedInThisSegment = false;
+                        float posX = _lanePositions[i].x;
+                        float posZ = -5f + segmentSize * (j + 0.7f);
+
+                        Vector3 segmentPosition = new Vector3(0, 0, 0);
+
+                        if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Platform)
+                        {
+                            segmentPosition = new Vector3(posX, 0.35f, posZ);
+                        }
+                        else
+                        {
+                            segmentPosition = new Vector3(posX, 0, posZ);
+                        }
+
+                        Segment segment = _mapData[i, j];
+
+                        Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
+
+                        // Spawn 5 coins with a 0.05f gap between them
+                        for (int k = 0; k < 5; k++)
+                        {
+                            Vector3 coinSpawnPosition = new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z + (k));
+                            Transform newGameObject = Instantiate(_collectableCoin.Prefab, coinSpawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                            newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(coinSpawnPosition);
+                        }
+
+                        coinCount += 5; // Increment coin count by 5 for the 5 coins spawned
+                    }
+                }
+            }
+
+            if (coinCount >= 15) // Set a limit for the total number of coins
+            {
+                coinLimitAchieved = true;
+                break; // Break the loop if the coin limit is achieved
+            }
+        }
     }
 
     private void PopulateMapWithObstacles()
@@ -273,7 +335,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateLevelWithMapData(Transform groundPlaneTransform)
     {
-        GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
+       // GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
 
         // Calculate the segment size in the Z direction
         float segmentSize = 10f / _mapData.GetLength(1);
@@ -297,14 +359,14 @@ public class LevelGenerator : MonoBehaviour
                 {
                     // Instantiate the platform with ramp prefab
                     Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
-                    GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlane.transform);
+                    GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
                     Debug.Log("Segment position: " + segmentPosition);
                 }
                 else if(segment.Type == SegmentType.Platform)
                 {
                     Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
-                    GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlane.transform);
+                    GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
                     Debug.Log("Segment position: " + segmentPosition);
                 }
@@ -313,7 +375,7 @@ public class LevelGenerator : MonoBehaviour
                     Debug.Log("Segment position for obstacle: " + segmentPosition);
                     Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
                     int randomValue = UnityEngine.Random.Range(0, 3);
-                    Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlane.transform);
+                    Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
                 }
                 else {
@@ -322,6 +384,8 @@ public class LevelGenerator : MonoBehaviour
 
             }
         }
+
+        PopulateMapWithCollectibles(groundPlaneTransform.transform);
 
     }
 

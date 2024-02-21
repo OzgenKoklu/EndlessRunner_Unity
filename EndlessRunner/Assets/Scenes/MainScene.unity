@@ -3998,6 +3998,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7c7d23af32490c5469666e87f1b37e3d, type: 2}
   - {fileID: 11400000, guid: dc3127e07bdc20644a66da7bad3b4fd8, type: 2}
   - {fileID: 11400000, guid: 660413c2896fcc64e926ab67fd656d0a, type: 2}
+  _collectableCoin: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
 --- !u!1 &1408931999
 GameObject:
   m_ObjectHideFlags: 0
