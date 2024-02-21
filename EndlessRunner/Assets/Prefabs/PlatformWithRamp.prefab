@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pivotOffset: {x: -1.08, y: 0, z: 0}
+  _pivotOffset: {x: -1.08, y: 0, z: 2.8}
 --- !u!1 &3685932985751404102
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,8 +99,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.8239843, y: 1.2719644, z: 18.445805}
-  m_Center: {x: 0.9621597, y: 0.6111208, z: 10.740413}
+  m_Size: {x: 1.8239841, y: 1.3409781, z: 4.01102}
+  m_Center: {x: 0.9621597, y: 0.6456277, z: 2.959671}
 --- !u!1001 &1110560506670657213
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -223,7 +223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4962039562683002, guid: bbc12ae2f967ec04e8c3c39eeb92733b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 20
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4962039562683002, guid: bbc12ae2f967ec04e8c3c39eeb92733b, type: 3}
       propertyPath: m_LocalPosition.x

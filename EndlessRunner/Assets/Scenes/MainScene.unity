@@ -3991,6 +3991,9 @@ MonoBehaviour:
   _levelObjectListSO: {fileID: 11400000, guid: e6722b6d13e72d146a6427a410e5118f, type: 2}
   _groundPlanePrefabTransform: {fileID: 3688575556555131555, guid: 26c26ba7b6045544b829e65d2dd62cbe,
     type: 3}
+  _platformSO: {fileID: 11400000, guid: 08a01797e7208cb48a5f37e215779f6a, type: 2}
+  _platformWithRampSO: {fileID: 11400000, guid: 37bc9378b0f33b841940734cfa083643,
+    type: 2}
 --- !u!1 &1408931999
 GameObject:
   m_ObjectHideFlags: 0
