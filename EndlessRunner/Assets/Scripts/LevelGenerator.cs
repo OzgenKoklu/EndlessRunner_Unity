@@ -9,6 +9,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private Transform _groundPlanePrefabTransform;
     [SerializeField] private LevelObjectSO _platformSO;
     [SerializeField] private LevelObjectSO _platformWithRampSO;
+    [SerializeField] private List<LevelObjectSO> _obstacleList;
 
 
 
@@ -26,7 +27,8 @@ public class LevelGenerator : MonoBehaviour
     {
         Empty,
         Platform,
-        PlatformWithRamp
+        PlatformWithRamp, 
+        Obstacle
     }
 
     public class Segment
@@ -68,46 +70,14 @@ public class LevelGenerator : MonoBehaviour
         }
 
         // Populate the map with platforms and ramps
-        PopulateMap();
+        PopulateMapWithRampsAndPlatforms();
+        PopulateMapWithObstacles();
         GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
         GenerateLevelWithMapData(groundPlane.transform);
     }
-    /*
-    private void PopulateMap()
-    {
-        // Add platforms and ramps to the map
-        for (int i = 0; i < _mapData.GetLength(0); i++)
-        {
 
 
-            for (int j = 0; j < _mapData.GetLength(1); j++)
-            {
-                // Add platforms or ramps based on random conditions
-                if (RandomShouldAddPlatform())
-                {
-                    _mapData[i, j].Type = SegmentType.Platform;
-                    if (j + 1 < _mapData.GetLength(1))
-                    {
-                        _mapData[i, j + 1].Type = SegmentType.Empty;
-                    }
-                }
-                else if (RandomShouldAddPlatformWithRamp())
-                {
-                    _mapData[i, j].Type = SegmentType.PlatformWithRamp;
-                    if (j + 1 < _mapData.GetLength(1) && RandomShouldAddPlatformNext())
-                    {
-                        _mapData[i, j + 1].Type = SegmentType.Platform;
-                    }
-                }
-            }
-        }
-
-        // Ensure at least one lane is passable on the ground level
-        EnsureGroundPassable();
-    }
-    */
-
-    private void PopulateMap()
+    private void PopulateMapWithRampsAndPlatforms()
     {
         // Flags to track if a ramp has been spawned in the current row
         bool rampSpawned = false;
@@ -148,6 +118,31 @@ public class LevelGenerator : MonoBehaviour
         EnsureGroundPassable();
     }
 
+    private void PopulateMapWithObstacles()
+    {
+        bool obstacleSpawned = false;
+
+        for (int j = 0; j < _mapData.GetLength(1); j++)
+        {
+            for (int i = 0; i < _mapData.GetLength(0); i++)
+            {
+                //ensures it spawns to an empty position that also has an empty position before it. (it can be a platform before it after all)
+                if (_mapData[i, j].Type == SegmentType.Empty && IsCrossNeighborSegmentEmpty(i, j, 0, -1))
+                {
+                    if (RandomShouldAddObstacle() && !obstacleSpawned)
+                    {
+                        _mapData[i, j].Type = SegmentType.Obstacle;
+                        obstacleSpawned = true;
+                    }
+                }
+            }
+            if (j % 3 == 0) // Reset after every three rows
+            {
+                obstacleSpawned = false;
+            }
+        }
+    }
+
     // Check if the previous segment in the same lane is empty
     private bool IsPreviousSegmentEmpty(int laneIndex, int segmentIndex)
     {
@@ -170,6 +165,20 @@ public class LevelGenerator : MonoBehaviour
         }
         return true;
     }
+
+    private bool RandomShouldAddObstacle()
+    {
+        // Implement your logic for adding platforms
+        // Example: Return true with a certain probability
+        return UnityEngine.Random.Range(0f, 1f) < 0.5f;
+    }
+    private bool RandomShouldAddCollectable()
+    {
+        // Implement your logic for adding platforms
+        // Example: Return true with a certain probability
+        return UnityEngine.Random.Range(0f, 1f) < 0.5f;
+    }
+
     private bool RandomShouldAddPlatform()
     {
         // Implement your logic for adding platforms
@@ -251,7 +260,7 @@ public class LevelGenerator : MonoBehaviour
     private bool IsCrossNeighborSegmentEmpty(int laneIndex, int segmentIndex, int delta, int deltaSegment)
     {
         // Check if the neighboring segment at laneIndex + delta is within bounds
-        if (laneIndex + delta >= 0 && laneIndex + delta < _mapData.GetLength(0))
+        if ((laneIndex + delta >= 0 && laneIndex + delta < _mapData.GetLength(0)) && (segmentIndex + deltaSegment >= 0 && segmentIndex + deltaSegment < _mapData.GetLength(1)))
         {
             // Check if the neighboring segment at laneIndex + delta is empty
             if (_mapData[laneIndex + delta, segmentIndex + deltaSegment].Type == SegmentType.Empty)
@@ -261,40 +270,6 @@ public class LevelGenerator : MonoBehaviour
         }
         return false;
     }
-
-    /*
-    private void EnsureGroundPassable()
-    {
-        for (int laneIndex = 0; laneIndex < _mapData.GetLength(0); laneIndex++)
-        {
-            bool atLeastOneEmptySegment = false;
-            for (int segmentIndex = 0; segmentIndex < _mapData.GetLength(1); segmentIndex++)
-            {
-                if (_mapData[laneIndex, segmentIndex].Type == SegmentType.Empty)
-                {
-                    atLeastOneEmptySegment = true;
-                    break;
-                }
-            }
-
-            if (!atLeastOneEmptySegment)
-            {
-                // Choose a random segment in the lane and make it empty (ensure it doesn't have a platform to its right)
-                int randomSegmentIndex = UnityEngine.Random.Range(0, _mapData.GetLength(1) - 1);
-                if (_mapData[laneIndex, randomSegmentIndex + 1].Type != SegmentType.Platform)
-                {
-                    _mapData[laneIndex, randomSegmentIndex].Type = SegmentType.Empty;
-                }
-                else
-                {
-                    // If the last segment is blocked, make the second-to-last empty
-                    _mapData[laneIndex, randomSegmentIndex - 1].Type = SegmentType.Empty;
-                }
-            }
-        }
-    }
-
-    */
 
     private void GenerateLevelWithMapData(Transform groundPlaneTransform)
     {
@@ -333,135 +308,21 @@ public class LevelGenerator : MonoBehaviour
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
                     Debug.Log("Segment position: " + segmentPosition);
                 }
-                else
+                else if(segment.Type == SegmentType.Obstacle)
                 {
-
-                }
-
-            }
-        }
-
-    }
-    private void GenerateLevel()
-    {
-        if (_levelObjectListSO == null || _groundPlanePrefabTransform == null)
-        {
-            Debug.LogError("Level Object List or Ground Plane Prefab is not assigned!");
-            return;
-        }
-
-        // Instantiate the ground plane prefab
-        GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
-
-        // Populate the ground plane with child objects
-        PopulateGroundPlane(groundPlane.transform);
-    }
-
-    private void PopulateGroundPlane(Transform groundPlaneTransform)
-    {
-        foreach (Vector3 lanePosition in new Vector3[] { _leftLanePosition, _middleLanePosition, _rightLanePosition })
-        {
-            float minZposition = -5;
-
-            foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
-            {
-                
-                if (Random.value < 0.5f) // Adjust this threshold according to your needs
-                {
-                    // Randomly select a level object from the list
-                    // LevelObjectSO levelObject = _levelObjectListSO.levelObjectSOList[Random.Range(0, _levelObjectListSO.levelObjectSOList.Count)];
-
-
-                    bool changeMinPos;
-                    float zPosition = CalculateSpawnPosition(levelObject, minZposition,out changeMinPos);
-                    Debug.Log(changeMinPos);
-                   
-                    Debug.Log("Min z position for lane: " + lanePosition + " and Level object : " +levelObject.name + ", PositionZ:" + minZposition);
-                    if (changeMinPos)
-                    {
-                        minZposition += zPosition + levelObject.ObjectSpawnBlockLenght;
-                    }
-                    
-                    if (zPosition == -10) continue;
-
-                    // Calculate the spawn position relative to the ground plane's local space
-                    Vector3 spawnPosition = groundPlaneTransform.TransformPoint(lanePosition + new Vector3(0, 0, zPosition));
-
-                    // Instantiate the selected object as a child of the ground plane
-                    Transform newGameObject = Instantiate(levelObject.Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform);
-
+                    Debug.Log("Segment position for obstacle: " + segmentPosition);
+                    Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
+                    int randomValue = UnityEngine.Random.Range(0, 3);
+                    Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlane.transform);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
                 }
-            }
+                else {
 
-        }
-    }
+                }
 
-
-    
-    private void PopulateLaneWithPlatforms()
-    {
-        // Randomly select objects from the levelObjectListSO and instantiate them along the lane
-        foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
-        {
-            if (levelObject.Kind != LevelObjectSO.LevelObjectKind.Platform || levelObject.Kind != LevelObjectSO.LevelObjectKind.PlatformWithRamp) return;
-            // Randomly determine if the object should be spawned
-           
-        }
-    }
-
-    private void PopulateLaneWithObstacles()
-    {
-    
-        // Randomly select objects from the levelObjectListSO and instantiate them along the lane
-        foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
-        {
-            if (levelObject.Kind != LevelObjectSO.LevelObjectKind.SlidingObstacle|| levelObject.Kind != LevelObjectSO.LevelObjectKind.JumpingObstacle) return;
-            
-
-        }
-    }
-
-    private void PopulateLaneWithCollectibles(Vector3 lanePosition)
-    {
-        // Define initial spawn position
-        Vector3 spawnPosition = lanePosition;
-
-        // Randomly select objects from the levelObjectListSO and instantiate them along the lane
-        foreach (LevelObjectSO levelObject in _levelObjectListSO.levelObjectSOList)
-        {
-            // Randomly determine if the object should be spawned
-            if (Random.value < 0.5f) // Adjust this threshold according to your needs
-            {
-                // Instantiate the object
-                Instantiate(levelObject.Prefab, spawnPosition, Quaternion.identity);
-
-                // Update spawn position for the next object
-                spawnPosition.z += levelObject.ObjectSpawnBlockLenght + _spawnOffset;
             }
         }
+
     }
-
-    float CalculateSpawnPosition(LevelObjectSO levelObjectSO, float minZposition, out bool changeMinPos)
-    {
-
-        //5 = end of the plane, I know magic numbers are bad
-        float maxZPosition = 5;  // Max Z position considering the object spawn block length
-        //float maxZPosition = 5 - levelObjectSO.ObjectSpawnBlockLenght; // Max Z position considering the object spawn block length
-        if (maxZPosition < minZposition)
-        {
-            changeMinPos = false;
-            return -10;
-            
-        }
-
-        float zPosition = Random.Range(minZposition, maxZPosition);
-
-
-
-        changeMinPos = true;
-        return zPosition;
-    }
-
 
 }

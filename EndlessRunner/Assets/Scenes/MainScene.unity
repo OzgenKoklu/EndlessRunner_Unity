@@ -3994,6 +3994,10 @@ MonoBehaviour:
   _platformSO: {fileID: 11400000, guid: 08a01797e7208cb48a5f37e215779f6a, type: 2}
   _platformWithRampSO: {fileID: 11400000, guid: 37bc9378b0f33b841940734cfa083643,
     type: 2}
+  _obstacleList:
+  - {fileID: 11400000, guid: 7c7d23af32490c5469666e87f1b37e3d, type: 2}
+  - {fileID: 11400000, guid: dc3127e07bdc20644a66da7bad3b4fd8, type: 2}
+  - {fileID: 11400000, guid: 660413c2896fcc64e926ab67fd656d0a, type: 2}
 --- !u!1 &1408931999
 GameObject:
   m_ObjectHideFlags: 0
