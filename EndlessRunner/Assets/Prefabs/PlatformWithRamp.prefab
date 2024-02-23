@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6936935754449903905}
   - component: {fileID: 4995997771288056516}
+  - component: {fileID: 3526242695451990513}
   m_Layer: 0
   m_Name: PlatformWithRamp
   m_TagString: Platform
@@ -49,6 +50,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pivotOffset: {x: -1.08, y: 0, z: 2.8}
+--- !u!114 &3526242695451990513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097874212122855823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e31148d0e8f958043bd4b3928a063a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3361236038144883860
 GameObject:
   m_ObjectHideFlags: 0

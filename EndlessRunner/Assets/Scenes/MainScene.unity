@@ -3999,6 +3999,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dc3127e07bdc20644a66da7bad3b4fd8, type: 2}
   - {fileID: 11400000, guid: 660413c2896fcc64e926ab67fd656d0a, type: 2}
   _collectableCoin: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
+  _groundPlaneSO: {fileID: 11400000, guid: 1e16874166fe542458863372dbf0d20d, type: 2}
+  isObjectPoolReady: 0
 --- !u!1 &1408931999
 GameObject:
   m_ObjectHideFlags: 0
@@ -4833,6 +4835,79 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8907324891705536564}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1687864295
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1687864296}
+  - component: {fileID: 1687864297}
+  m_Layer: 0
+  m_Name: ObjectPoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1687864296
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687864295}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1687864297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687864295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 211b213dac418154492b250c39f18a8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPoolNotReady: 0
+  pools:
+  - ObjectName: GroundPlane
+    prefab: {fileID: 3028227022565766675, guid: 26c26ba7b6045544b829e65d2dd62cbe,
+      type: 3}
+    size: 4
+  - ObjectName: Platform
+    prefab: {fileID: 4295189101463574215, guid: f434b0398f42cb3469a8ae999c9168ca,
+      type: 3}
+    size: 45
+  - ObjectName: PlatformWithRamp
+    prefab: {fileID: 1097874212122855823, guid: 9dd872792df3fb446925991a4dccee05,
+      type: 3}
+    size: 8
+  - ObjectName: ObstacleBox
+    prefab: {fileID: 5662577579595787198, guid: 2515dd681ae510b458994f1da35cdcaa,
+      type: 3}
+    size: 15
+  - ObjectName: ObstacleCones
+    prefab: {fileID: 820467935722997091, guid: 62e93edf44fa2ba42bd681853f3add77, type: 3}
+    size: 15
+  - ObjectName: SlidingObstacle
+    prefab: {fileID: 5204321678087703683, guid: e4808d5576a5ec1448ce3ff5b287a26d,
+      type: 3}
+    size: 15
+  - ObjectName: Coin
+    prefab: {fileID: 3029782315669219994, guid: a1087dc3ad83a4947ab9b920fcf4e3bf,
+      type: 3}
+    size: 60
 --- !u!1 &1735168109
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6551085432494376911}
   - component: {fileID: 3952491929674074584}
+  - component: {fileID: 1072191867176521048}
   m_Layer: 0
   m_Name: Obstacle_Cones
   m_TagString: JumpObstacle
@@ -48,6 +49,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pivotOffset: {x: 0, y: 0.1, z: 0}
+--- !u!114 &1072191867176521048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820467935722997091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e31148d0e8f958043bd4b3928a063a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1964882142519662130
 PrefabInstance:
   m_ObjectHideFlags: 0

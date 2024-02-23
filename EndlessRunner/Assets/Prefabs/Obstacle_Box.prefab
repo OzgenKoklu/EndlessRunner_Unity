@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5099875256315259188}
   - component: {fileID: 1102121828025709857}
   - component: {fileID: 6742597422867423106}
+  - component: {fileID: -6429931306134031406}
   m_Layer: 0
   m_Name: Obstacle_Box
   m_TagString: JumpObstacle
@@ -120,3 +121,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pivotOffset: {x: 0, y: 0.5, z: 0}
+--- !u!114 &-6429931306134031406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5662577579595787198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e31148d0e8f958043bd4b3928a063a96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

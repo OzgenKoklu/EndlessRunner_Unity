@@ -20,7 +20,7 @@ Made with Unity 2022.3.0f1 LTS
 
 A task project assigned by Velo Games.
 
-A simple endless runner game similar to subway surfers.
+A simple endless runner game similar to subway surfers. With precedural level generation.
 
 More info in VeloGames-task-2-tr.pdf in the root folder.
 
@@ -55,13 +55,14 @@ Main functions complete, buggy and "game feel" is bad.
 <!-- Technical Details -->
 ## Technical Details
 
--Object pooling
+-Procedural Level Generation - LevelGenerator.cs 
 
--?? Level precedure
 
--curved graphics (Shader graph?)
+-Object pooling - 
 
--Observer pattern
+
+
+-Observer pattern - how main mechanics work, even player controller works with observer
 
 
 
