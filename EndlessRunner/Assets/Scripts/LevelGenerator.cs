@@ -64,6 +64,7 @@ public class LevelGenerator : MonoBehaviour
         _lanePositions.Add(_rightLanePosition);
         SegmentMap(laneCount, segmentCount);
         // GenerateLevel();
+        ObjectPoolManager.Instance.onInitializationComplete -= OnPoolInitializationComplete;
     }
 
     public void SegmentMap(int lanes, int segments)

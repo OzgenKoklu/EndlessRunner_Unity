@@ -5,7 +5,7 @@ using UnityEngine;
 public class RepeatedGroundPlane : MonoBehaviour
 {
     private float _speed = 10;
-    private int _backwardBoundry = -40;
+    private int _backwardBoundry = -45;
     private float _speedModifier = 1;
 
     private Vector3 repeatPos = new Vector3(0, 0, 170);
@@ -46,21 +46,32 @@ public class RepeatedGroundPlane : MonoBehaviour
 
     private void MoveWhenOutOfBounds()
     {
-        if (transform.position.z < _backwardBoundry )
+        if (transform.position.z < _backwardBoundry)
         {
-            if (gameObject.CompareTag("GroundPlane"))
+            foreach (Transform child in transform)
             {
-                transform.position = repeatPos;
-
+                PoolItem poolItem = child.GetComponent<PoolItem>();
+                if (poolItem != null && poolItem.levelObjectInfo != null)
+                {
+                    // Use the ObjectName from the ScriptableObject as the identifier for the pool
+                    ObjectPoolManager.Instance.ReturnToPool(poolItem.levelObjectInfo.ObjectName, child.gameObject);
+                    Debug.Log($"{child.name} named child successfully returned to the pool");
+                }
+                else
+                {
+                    //true for highway itself 
+                    Debug.LogWarning($"{child.name} does not have a PoolItem component or its LevelObjectSO is null");
+                }
             }
-            else
+            // This step assumes that the ground plane also has a PoolItem component attached
+            /*PoolItem groundPlanePoolItem = GetComponent<PoolItem>();
+            if (groundPlanePoolItem != null && groundPlanePoolItem.levelObjectInfo != null)
             {
-                //destroys the start plane
-                Destroy(gameObject);
-            }
-           
-        }     
+                ObjectPoolManager.Instance.ReturnToPool(groundPlanePoolItem.levelObjectInfo.ObjectName, gameObject);
+            }*/
+        }
     }
+
 
     private void StopMovement()
     {

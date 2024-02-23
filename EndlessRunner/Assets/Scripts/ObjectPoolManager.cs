@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
+
+    private Transform inactiveObjectsParent;
+
     [System.Serializable]
     public class Pool
     {
@@ -20,6 +23,7 @@ public class ObjectPoolManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        inactiveObjectsParent = new GameObject("InactivePoolObjects").transform;
         InitializePools();
     }
 
@@ -105,5 +109,18 @@ public class ObjectPoolManager : MonoBehaviour
         poolDictionary[tag].Enqueue(objectToSpawn);
 
         return objectToSpawn;
+    }
+    public void ReturnToPool(string objectName, GameObject objectToReturn)
+    {
+        if (!poolDictionary.ContainsKey(objectName))
+        {
+            Debug.LogWarning($"ReturnToPool: Pool with tag {objectName} doesn't exist.");
+            return;
+        }
+
+        objectToReturn.SetActive(false);
+        objectToReturn.transform.SetParent(inactiveObjectsParent);
+        //objectToReturn.transform.SetParent(false);
+        poolDictionary[objectName].Enqueue(objectToReturn);
     }
 }
