@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5956342359054412573}
   - component: {fileID: 7846712423064481328}
   - component: {fileID: -5288968228979808475}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlatformWithoutRamp
   m_TagString: Platform
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 4295189101463574215}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.7, y: 0.07000017, z: 4.86}
-  m_LocalScale: {x: 0.28571424, y: 0.28571424, z: 1}
+  m_LocalScale: {x: 0.28571424, y: 0.28571424, z: 0.99}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 605917227612398062}
@@ -144,7 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 605917227612398062}
   - component: {fileID: 4917089058143069711}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ObstacleCollider
   m_TagString: WallObstacle
   m_Icon: {fileID: 0}

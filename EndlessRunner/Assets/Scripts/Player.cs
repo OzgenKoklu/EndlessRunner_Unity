@@ -161,7 +161,7 @@ public class Player : MonoBehaviour
        
         _playerSpeed = _initialPlayerSpeed * _playerSpeedModifier;
 
-        Debug.Log(_playerSpeed);
+      //  Debug.Log(_playerSpeed);
     }
 
     private void _playerCollisionDetection_OnCoinGrabbed(object sender, EventArgs e)
@@ -263,7 +263,7 @@ public class Player : MonoBehaviour
     IEnumerator SlidingTimerTrigger()
     {
         // Wait for 1 second
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.5f);
 
         _playerState = PlayerState.Running;
         // Set the trigger on the animator
@@ -396,6 +396,11 @@ public class Player : MonoBehaviour
                 OnGroundHit?.Invoke(this, EventArgs.Empty);
             }
         }      
+    }
+
+    public bool IsPlayerMoving()
+    {
+        return _isMoving;
     }
 
     public int GetPlayerCoinCount()

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6551085432494376911}
   - component: {fileID: 3952491929674074584}
   - component: {fileID: 1072191867176521048}
+  - component: {fileID: 1231982357584430472}
   m_Layer: 0
   m_Name: Obstacle_Cones
   m_TagString: JumpObstacle
@@ -62,6 +63,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelObjectInfo: {fileID: 11400000, guid: dc3127e07bdc20644a66da7bad3b4fd8, type: 2}
+--- !u!65 &1231982357584430472
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820467935722997091}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.8775778, z: 1}
+  m_Center: {x: 0, y: 0.38178846, z: 0}
 --- !u!1001 &1964882142519662130
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -127,7 +149,8 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64716801127992332, guid: 37e681eb08549004c9d9c2be529cbf54, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -203,7 +226,8 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64716801127992332, guid: 37e681eb08549004c9d9c2be529cbf54, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -228,7 +252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1109385109949186, guid: 37e681eb08549004c9d9c2be529cbf54, type: 3}
       propertyPath: m_TagString
-      value: JumpObstacle
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4812002822647660, guid: 37e681eb08549004c9d9c2be529cbf54, type: 3}
       propertyPath: m_RootOrder
@@ -279,7 +303,8 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64716801127992332, guid: 37e681eb08549004c9d9c2be529cbf54, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

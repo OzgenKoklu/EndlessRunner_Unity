@@ -120,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a9d886053ad20843a3c8cb39a2cc00b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pivotOffset: {x: 0, y: 0.5, z: 0}
+  _pivotOffset: {x: 0, y: 0.55, z: 0}
 --- !u!114 &-6429931306134031406
 MonoBehaviour:
   m_ObjectHideFlags: 0

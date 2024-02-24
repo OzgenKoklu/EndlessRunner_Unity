@@ -116,11 +116,13 @@ public class ObjectPoolManager : MonoBehaviour
             Debug.LogWarning($"ReturnToPool: Pool with tag {objectName} doesn't exist.");
             return;
         }
-
         objectToReturn.SetActive(false);
-        
-        objectToReturn.transform.SetParent(_objectPoolPlane);
-       
+
+        if (objectName != "GroundPlane")
+        {
+            
+            objectToReturn.transform.SetParent(_objectPoolPlane);
+        }
         poolDictionary[objectName].Enqueue(objectToReturn);
     }
 }

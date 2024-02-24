@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         _highScore = PlayerPrefs.GetInt(PlayerPrefsHighScore);
         _multiplierTimer = 0;
-        Debug.Log(_highScore);
+       // Debug.Log(_highScore);
     }
     void Start()
     {
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
         
         if(_highScoreSession > _highScore)
         {
-            Debug.Log("Highest score set");
+            //Debug.Log("Highest score set");
             OnGameEnd?.Invoke(this, new OnGameEndEventArgs
             {
                 isHighScore = true
