@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
-
-    private Transform inactiveObjectsParent;
+    [SerializeField] Transform _objectPoolPlane;
 
     [System.Serializable]
     public class Pool
@@ -23,7 +22,7 @@ public class ObjectPoolManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        inactiveObjectsParent = new GameObject("InactivePoolObjects").transform;
+
         InitializePools();
     }
 
@@ -119,8 +118,9 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
         objectToReturn.SetActive(false);
-        objectToReturn.transform.SetParent(inactiveObjectsParent);
-        //objectToReturn.transform.SetParent(false);
+        
+        objectToReturn.transform.SetParent(_objectPoolPlane);
+       
         poolDictionary[objectName].Enqueue(objectToReturn);
     }
 }

@@ -48,27 +48,35 @@ public class RepeatedGroundPlane : MonoBehaviour
     {
         if (transform.position.z < _backwardBoundry)
         {
+            // Collect all child pool items in a list before processing
+            List<PoolItem> childrenPoolItems = new List<PoolItem>();
             foreach (Transform child in transform)
             {
                 PoolItem poolItem = child.GetComponent<PoolItem>();
-                if (poolItem != null && poolItem.levelObjectInfo != null)
+
+                if (poolItem != null) // Ensure the child has a PoolItem component
                 {
-                    // Use the ObjectName from the ScriptableObject as the identifier for the pool
-                    ObjectPoolManager.Instance.ReturnToPool(poolItem.levelObjectInfo.ObjectName, child.gameObject);
-                    Debug.Log($"{child.name} named child successfully returned to the pool");
-                }
-                else
-                {
-                    //true for highway itself 
-                    Debug.LogWarning($"{child.name} does not have a PoolItem component or its LevelObjectSO is null");
+                    childrenPoolItems.Add(poolItem);
                 }
             }
-            // This step assumes that the ground plane also has a PoolItem component attached
-            /*PoolItem groundPlanePoolItem = GetComponent<PoolItem>();
+
+            foreach (var poolItem in childrenPoolItems)
+            {
+                if (poolItem.levelObjectInfo != null)
+                {
+                    ObjectPoolManager.Instance.ReturnToPool(poolItem.levelObjectInfo.ObjectName, poolItem.gameObject);
+                    Debug.Log(poolItem.gameObject.name + " named child successfully returned to the pool");
+                }
+
+            }
+
+            // Now handle the GroundPlane itself
+            PoolItem groundPlanePoolItem = GetComponent<PoolItem>();
             if (groundPlanePoolItem != null && groundPlanePoolItem.levelObjectInfo != null)
             {
                 ObjectPoolManager.Instance.ReturnToPool(groundPlanePoolItem.levelObjectInfo.ObjectName, gameObject);
-            }*/
+                Debug.Log("GroundPlane successfully returned to the pool");
+            }
         }
     }
 

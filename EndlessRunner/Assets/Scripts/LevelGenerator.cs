@@ -13,9 +13,9 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private LevelObjectSO _collectableCoin;
     [SerializeField] private LevelObjectSO _groundPlaneSO;
 
+    public GameObject LastGroundPlane;
 
-
-    private Vector3 _generationPosition = new Vector3(0, 0, 100);
+    private Vector3 _generationPosition = new Vector3(0, 0, 0);
 
 
     private Vector3 _leftLanePosition = new Vector3(-0.35f, 0, 0);
@@ -25,6 +25,7 @@ public class LevelGenerator : MonoBehaviour
     private List<Vector3> _lanePositions;
     private float _spawnOffset = 1f;
     public bool isObjectPoolReady = false;
+    private bool _isFirstPlane = true;
 
     public enum SegmentType
     {
@@ -84,14 +85,23 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
-        // Populate the map with platforms and ramps
-        PopulateMapWithRampsAndPlatforms();
-        PopulateMapWithObstacles();
-        
-       // GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
-        GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _generationPosition, Quaternion.identity);
+        if (_isFirstPlane)
+        {
+            GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _generationPosition, Quaternion.identity);
+            LastGroundPlane = groundPlane;
+        }       
 
-        GenerateLevelWithMapData(groundPlane.transform);
+        if (!_isFirstPlane)
+        {
+            Vector3 spawnPosition = LastGroundPlane.transform.position + new Vector3(0, 0, 70f);
+            GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, spawnPosition, Quaternion.identity);
+            LastGroundPlane = groundPlane;
+            // Populate the map with platforms and ramps
+            PopulateMapWithRampsAndPlatforms();
+            PopulateMapWithObstacles();
+            GenerateLevelWithMapData(groundPlane.transform);
+        }
+        _isFirstPlane = false;
     }
 
 
