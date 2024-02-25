@@ -1,10 +1,9 @@
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
-    [SerializeField] Transform _objectPoolPlane;
-
     [System.Serializable]
     public class Pool
     {
@@ -29,12 +28,6 @@ public class ObjectPoolManager : MonoBehaviour
     public List<Pool> pools;
     public Dictionary<string, Queue<GameObject>> poolDictionary;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if (!isPoolNotReady)
@@ -55,6 +48,7 @@ public class ObjectPoolManager : MonoBehaviour
             {
                 GameObject obj = Instantiate(pool.prefab);
                 obj.SetActive(false);
+                obj.transform.position = Vector3.zero;
                 objectPool.Enqueue(obj);
             }
 
@@ -84,31 +78,6 @@ public class ObjectPoolManager : MonoBehaviour
         return objectToSpawn;
     }
 
-    //For spawning inside a parent
-    public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation, Transform parent = null)
-    {
-        if (!poolDictionary.ContainsKey(tag))
-        {
-            Debug.LogWarning($"Pool with tag {tag} doesn't exist.");
-            return null;
-        }
-
-        GameObject objectToSpawn = poolDictionary[tag].Dequeue();
-
-        objectToSpawn.SetActive(true);
-        objectToSpawn.transform.position = position;
-        objectToSpawn.transform.rotation = rotation;
-
-        // Set the parent of the spawned object if a parent transform is provided
-        if (parent != null)
-        {
-            objectToSpawn.transform.SetParent(parent, false);
-        }
-
-        poolDictionary[tag].Enqueue(objectToSpawn);
-
-        return objectToSpawn;
-    }
     public void ReturnToPool(string objectName, GameObject objectToReturn)
     {
         if (!poolDictionary.ContainsKey(objectName))
@@ -118,11 +87,13 @@ public class ObjectPoolManager : MonoBehaviour
         }
         objectToReturn.SetActive(false);
 
-        if (objectName != "GroundPlane")
-        {
-            
-            objectToReturn.transform.SetParent(_objectPoolPlane);
-        }
+        objectToReturn.transform.SetParent(null);
+
+        objectToReturn.transform.position = Vector3.zero;
+   
         poolDictionary[objectName].Enqueue(objectToReturn);
+
+       
+
     }
 }

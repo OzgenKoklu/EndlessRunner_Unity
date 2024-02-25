@@ -17,10 +17,15 @@ public class LevelGenerator : MonoBehaviour
 
     private Vector3 _generationPosition = new Vector3(0, 0, 0);
 
-
+    /*
     private Vector3 _leftLanePosition = new Vector3(-0.35f, 0, 0);
     private Vector3 _middleLanePosition = new Vector3(0, 0, 0);
     private Vector3 _rightLanePosition = new Vector3(0.35f, 0, 0);
+    */
+
+    private Vector3 _leftLanePosition = new Vector3(-2.3f, 0, 0);
+    private Vector3 _middleLanePosition = new Vector3(0, 0, 0);
+    private Vector3 _rightLanePosition = new Vector3(2.3f, 0, 0);
 
     private List<Vector3> _lanePositions;
     private float _spawnOffset = 1f;
@@ -153,7 +158,7 @@ public class LevelGenerator : MonoBehaviour
         //to ensure only one string of coins occur in the generated map
         bool notSpawnedInThisSegment = true;
         int coinCount = 0;
-        float segmentSize = 10f / _mapData.GetLength(1);
+        float segmentSize = 70f / _mapData.GetLength(1);
 
         for (int j = 0; j < _mapData.GetLength(1); j++)
         {
@@ -168,13 +173,13 @@ public class LevelGenerator : MonoBehaviour
                     {
                         notSpawnedInThisSegment = false;
                         float posX = _lanePositions[i].x;
-                        float posZ = -5f + segmentSize * (j + 0.7f);
+                        float posZ = -35f + segmentSize * (j + 5f);
 
                         Vector3 segmentPosition = new Vector3(0, 0, 0);
 
                         if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Platform)
                         {
-                            segmentPosition = new Vector3(posX, 0.35f, posZ);
+                            segmentPosition = new Vector3(posX, 2f, posZ + 1f);
                         }
                         else
                         {
@@ -188,10 +193,11 @@ public class LevelGenerator : MonoBehaviour
                         // Spawn 5 coins with a 0.05f gap between them
                         for (int k = 0; k < 5; k++)
                         {
-                            Vector3 coinSpawnPosition = new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z + (k));
+                            Vector3 coinSpawnPosition = segmentPosition + new Vector3(0,0,groundPlaneTransform.position.z - 35f);
                             //Transform newGameObject = Instantiate(_collectableCoin.Prefab, coinSpawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                            GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_collectableCoin.ObjectName, coinSpawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                            GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_collectableCoin.ObjectName, coinSpawnPosition, Quaternion.identity);
                             newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(coinSpawnPosition);
+                            newGameObject.transform.SetParent(groundPlaneTransform);
                         }
 
                         coinCount += 5; // Increment coin count by 5 for the 5 coins spawned
@@ -365,7 +371,7 @@ public class LevelGenerator : MonoBehaviour
        // GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
 
         // Calculate the segment size in the Z direction
-        float segmentSize = 10f / _mapData.GetLength(1);
+        float segmentSize = 70f / _mapData.GetLength(1);
 
         for (int laneIndex = 0; laneIndex < _mapData.GetLength(0); laneIndex++)
         {
@@ -385,28 +391,32 @@ public class LevelGenerator : MonoBehaviour
                 if (segment.Type == SegmentType.PlatformWithRamp)
                 {
                     // Instantiate the platform with ramp prefab
-                    Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z -35f); ;
                     //GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                  
+                    newGameObject.transform.SetParent(groundPlaneTransform);
+
+
                 }
                 else if(segment.Type == SegmentType.Platform)
                 {
-                    Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
                     //GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity,  groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                 
+                    newGameObject.transform.SetParent(groundPlaneTransform);
+
                 }
                 else if(segment.Type == SegmentType.Obstacle)
                 {
-                    
-                    Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
+
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z -35f); ;
                     int randomValue = UnityEngine.Random.Range(0, 3);
                     //Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity,  groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity);
                     newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                    newGameObject.transform.SetParent(groundPlaneTransform);
                 }
                 else {
 

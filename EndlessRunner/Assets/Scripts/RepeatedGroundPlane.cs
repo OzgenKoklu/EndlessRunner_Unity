@@ -65,7 +65,7 @@ public class RepeatedGroundPlane : MonoBehaviour
                 if (poolItem.levelObjectInfo != null)
                 {
                     ObjectPoolManager.Instance.ReturnToPool(poolItem.levelObjectInfo.ObjectName, poolItem.gameObject);
-                   // Debug.Log(poolItem.gameObject.name + " named child successfully returned to the pool");
+                    //Debug.Log(poolItem.gameObject.name + " named child successfully returned to the pool");
                 }
 
             }
