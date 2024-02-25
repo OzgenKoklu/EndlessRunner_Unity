@@ -13,7 +13,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private LevelObjectSO _collectableCoin;
     [SerializeField] private LevelObjectSO _groundPlaneSO;
 
-    public GameObject LastGroundPlane;
+    private GameObject _lastGroundPlane;
 
     private Vector3 _generationPosition = new Vector3(0, 0, 0);
 
@@ -21,11 +21,6 @@ public class LevelGenerator : MonoBehaviour
     private Vector3 _leftLanePosition = new Vector3(-0.35f, 0, 0);
     private Vector3 _middleLanePosition = new Vector3(0, 0, 0);
     private Vector3 _rightLanePosition = new Vector3(0.35f, 0, 0);
-
-
-    //can spawn from +- 0.05 and give some randomness on the poisitioning of the trees,
-    private Vector3 _leftSideTreeSpawnPosition = new Vector3(-0.45f, 0, 0);
-    private Vector3 _rightSideTreeSpawnPosition = new Vector3(0.45f, 0, 0);
 
     private List<Vector3> _lanePositions;
     private float _spawnOffset = 1f;
@@ -93,14 +88,14 @@ public class LevelGenerator : MonoBehaviour
         if (_isFirstPlane)
         {
             GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _generationPosition, Quaternion.identity);
-            LastGroundPlane = groundPlane;
+            _lastGroundPlane = groundPlane;
         }       
 
         if (!_isFirstPlane)
         {
-            Vector3 spawnPosition = LastGroundPlane.transform.position + new Vector3(0, 0, 70f);
+            Vector3 spawnPosition = _lastGroundPlane.transform.position + new Vector3(0, 0, 70f);
             GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, spawnPosition, Quaternion.identity);
-            LastGroundPlane = groundPlane;
+            _lastGroundPlane = groundPlane;
             // Populate the map with platforms and ramps
             PopulateMapWithRampsAndPlatforms();
             PopulateMapWithObstacles();

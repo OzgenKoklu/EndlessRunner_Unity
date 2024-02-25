@@ -29,6 +29,20 @@ More info in VeloGames-task-2-tr.pdf in the root folder.
 <!-- Dev Log -->
 ## Dev Log
 
+I decided to move the player using transform.position to achieve a more consistent movement feeling.
+
+The player does not move in the Z direction to keep everything close to the origin point, which helps avoid floating point errors for endless runs. This approach prevents transforms from becoming exponentially larger as time progresses.
+
+Using RigidBody resulted in somewhat "ragdoll-like" movements that felt draggy. 
+
+This was my first attempt at implementing object pooling and procedural level generation. (HUGE GAINS!)
+
+I spent most of my time figuring out how to utilize them effectively. Due to venturing into "unknown" territories,
+
+During the first two weeks, my time to polish anything was limited. I feel like almost every aspect of the game is unpolished.
+
+Overall, I'm pleased with how the project turned out. I'm happy that I was able to create somewhat playable "generated" levels.
+ 
 PNG 1: 
 
 
@@ -58,13 +72,11 @@ Main functions complete, buggy and "game feel" is bad.
 -Procedural Level Generation - LevelGenerator.cs 
 
 
--Object pooling - 
+-Object pooling - PoolItem, ObjectPoolManager.cs
 
 
 
 -Observer pattern - how main mechanics work, even player controller works with observer
-
-
 
 ----------
 
@@ -85,7 +97,7 @@ Grass texture - Grass 15 - https://opengameart.org/content/blended-textures-of-d
 
 POLYGON Starter Pack - Low Poly 3D Art by Synty https://assetstore.unity.com/packages/essentials/tutorial-projects/polygon-starter-pack-low-poly-3d-art-by-synty-156819
 
-Sounds: 
+Sounds: Unused
 
 select sound - https://pixabay.com/sound-effects/select-sound-121244/
 
