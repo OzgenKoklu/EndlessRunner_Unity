@@ -56,39 +56,7 @@ Overall, I'm pleased with how the project turned out. I'm happy that I was able 
 1) Object Pooling is not fully adapted. Once the initially instantiated pool is "consumed", the objects that are enqueued from the ReturnToPool() method cause a bug. This issue results in the level generator delaying its functions, causing significant gaps between ground planes. 
 Additionally, the procedural logic fails at that point, as multiple GameObjects tend to spawn on the same segment simultaneously.
 
-2) Occasionally, the level generator creates a structure with no route for the player to move across, represented as:
-
-```
-oxo
-
-xox 
-```
-
-or
-
-```
-xox
-
-oxo 
-```
-
-o = empty space, x = platform without ramp
- 
-I attempted to address this in the EnsureGroundPassable() method as follows:
-
-```csharp
- if (j == 1 && _mapData[j, i].Type == SegmentType.Platform)
-                    {
-                        if(!IsCrossNeighborSegmentEmpty(j, i, -1,-1) && !IsCrossNeighborSegmentEmpty(j, i, 1, -1))
-                        {
-                            int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-                            _mapData[j+ randomDirection, i].Type = SegmentType.Empty;
-                        }
-
-                    }
-```
-
-However, this did not completely solve the issue. The algorithm does not address problems between ground planes; it only resolves issues within segments assigned to a single ground plane. In the limited time I've spent debugging, I noticed this pattern more than once within a ground plane.
+2) Collider logics sometimes does not work as intended (like when sliding under an obstacle or falling through a platform when jumping)
 
 ----------
 

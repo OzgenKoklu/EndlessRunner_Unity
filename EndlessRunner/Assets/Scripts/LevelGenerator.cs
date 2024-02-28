@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,6 +49,9 @@ public class LevelGenerator : MonoBehaviour
     //this will be a 3x10 segment map
     private Segment[,] _mapData;
 
+    //this will be a 3x1 segment map
+    private Segment[] _lastMapLastRowData;
+
 
     private void Start()
     {
@@ -94,6 +98,15 @@ public class LevelGenerator : MonoBehaviour
         {
             GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _generationPosition, Quaternion.identity);
             _lastGroundPlane = groundPlane;
+
+            //initializes the last row segment map for maps after this to use (to unblock the road)
+
+            _lastMapLastRowData = new Segment[3];
+            for(int i = 0; i < 3; i++)
+            {
+                _lastMapLastRowData[i] = new Segment { Type = SegmentType.Empty };
+            }
+           // Debug.Log("Last row data lenght: " + _lastMapLastRowData.Length);
         }       
 
         if (!_isFirstPlane)
@@ -149,6 +162,22 @@ public class LevelGenerator : MonoBehaviour
 
         // Ensure at least one lane is passable on the ground level
         EnsureGroundPassable();
+
+        /*
+        for(int i = 0; i< _mapData.GetLength(0); i++)
+        {
+            Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" +"i: " + i + "j: "  + (_mapData.GetLength(1) - 1) + "Type: "+ _mapData[i,_mapData.GetLength(1) - 1].Type);
+        }
+        */
+        
+
+        //logging the last row of the road to ensure pathway next time map is generated.
+        for (int i = 0; i < _mapData.GetLength(0); i++)
+        {
+            _lastMapLastRowData[i].Type = _mapData[i, (_mapData.GetLength(1) - 1)].Type;
+            Debug.Log(" _lastMapLastRowData[i].Type:" + _lastMapLastRowData[i].Type);
+            Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" + "i: " + i + "j: " + (_mapData.GetLength(1) - 1) + "Type: " + _mapData[i, _mapData.GetLength(1) - 1].Type);
+        }
     }
 
     private void PopulateMapWithCollectibles(Transform groundPlaneTransform)
@@ -299,11 +328,21 @@ public class LevelGenerator : MonoBehaviour
     private void EnsureGroundPassable()
     {
         // Ensure that at least one lane is passable on the ground level
-        // Example: Set a random segment in each lane to be empty
+      
         for (int i = 0; i < _mapData.GetLength(1); i++)
         {
             if (i == 0)
             {
+                //this is where we should factor in the previous map data:
+                for (int j = 0; j < _mapData.GetLength(0); j++)
+                {
+                    //empties the first row of the map if it starts with a blockage.
+                    if(_lastMapLastRowData[j].Type == SegmentType.Empty && _mapData[j,i].Type == SegmentType.Platform)
+                    {
+                        _mapData[j, i].Type = SegmentType.Empty;
+                    }
+                }
+                // Example: Set a random segment in each lane to be empty
                 int randomSegmentIndex = UnityEngine.Random.Range(0, _mapData.GetLength(0));
                 _mapData[randomSegmentIndex, i].Type = SegmentType.Empty;
             }
@@ -322,16 +361,39 @@ public class LevelGenerator : MonoBehaviour
                         }
                     }
 
-                    //checks if path is blocked for the mid row.
-                    if (j == 1 && _mapData[j, i].Type == SegmentType.Platform)
+                    //checks if path is blocked by platforms for hte case of 
+                    //oxo 
+                    //xox 
+                    //o=empty road, x=platform
+                    try
                     {
-                        if(!IsCrossNeighborSegmentEmpty(j, i, -1,-1) && !IsCrossNeighborSegmentEmpty(j, i, 1, -1))
+                        if (j == 1 && _mapData[j, i].Type == SegmentType.Platform)
                         {
-                            int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
-                            _mapData[j+ randomDirection, i].Type = SegmentType.Empty;
-                        }
+                            if (!IsCrossNeighborSegmentEmpty(j, i, -1, -1) && !IsCrossNeighborSegmentEmpty(j, i, 1, -1))
+                            {
+                                int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+                                _mapData[j + randomDirection, i - 1].Type = SegmentType.Empty;
+                                Debug.Log(" Row before blockage cleaned, Emptied space at: J,I(3by10) for ensure passable ground: " + "j:" + (j+randomDirection) + " , i:" + (i - 1));
+                            }
 
+                            //and also for
+                            //xox
+                            //oxo
+                            if (!IsCrossNeighborSegmentEmpty(j, i, -1, 1) && !IsCrossNeighborSegmentEmpty(j, i, 1, 1))
+                            {
+                                int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+                                _mapData[j + randomDirection, i + 1].Type = SegmentType.Empty;
+                                Debug.Log(" Row After blockage cleaned, Emptied space at: J,I(3by10) for ensure passable ground: " + "j:" + (j+randomDirection) + " , i:" + (i + 1));
+                            }
+                        }
                     }
+                    catch(IndexOutOfRangeException e)
+                    {
+                        //not that important important, intersegment issues are beyond the scope of this project,
+                        //but we might add some extra gap between the planes to avoid generating impossable to pass areas
+                        Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
+                    }
+                   
                 }
 
             }
