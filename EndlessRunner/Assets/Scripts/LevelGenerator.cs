@@ -173,28 +173,29 @@ public class LevelGenerator : MonoBehaviour
                     {
                         notSpawnedInThisSegment = false;
                         float posX = _lanePositions[i].x;
-                        float posZ = -35f + segmentSize * (j + 5f);
+
+                        //-35'den +35'e 10 segment var. Segmentlerin tanesi 7 birim olacak, segment baþýnda deðil 0.4 sonrasýnda baþlýyor.
+                        float posZ = -35f + segmentSize * (j + 0.3f);
 
                         Vector3 segmentPosition = new Vector3(0, 0, 0);
 
                         if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Platform)
                         {
-                            segmentPosition = new Vector3(posX, 2f, posZ + 1f);
+                            segmentPosition = new Vector3(posX, 2f, posZ);
                         }
                         else
                         {
                             segmentPosition = new Vector3(posX, 0, posZ);
                         }
 
-                        Segment segment = _mapData[i, j];
+                        //Segment segment = _mapData[i, j];
 
                         Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
 
                         // Spawn 5 coins with a 0.05f gap between them
                         for (int k = 0; k < 5; k++)
-                        {
-                            Vector3 coinSpawnPosition = segmentPosition + new Vector3(0,0,groundPlaneTransform.position.z - 35f);
-                            //Transform newGameObject = Instantiate(_collectableCoin.Prefab, coinSpawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                        {                           
+                            Vector3 coinSpawnPosition =  new Vector3(segmentPosition.x +groundPlaneTransform.position.x,groundPlaneTransform.position.y+ segmentPosition.y,groundPlaneTransform.position.z+ segmentPosition.z +(k * 0.6f));                         
                             GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_collectableCoin.ObjectName, coinSpawnPosition, Quaternion.identity);
                             newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(coinSpawnPosition);
                             newGameObject.transform.SetParent(groundPlaneTransform);

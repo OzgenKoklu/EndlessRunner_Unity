@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 2293687074408438020}
   - component: {fileID: 2839728884387605471}
   - component: {fileID: 1195141282127065275}
-  - component: {fileID: 6891044609138134841}
   - component: {fileID: 5047594152254546969}
   - component: {fileID: 6051265291110236383}
   - component: {fileID: -3611758294597768975}
   - component: {fileID: -8020604499647937368}
+  - component: {fileID: 11717774786805223}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Coin
@@ -88,28 +88,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &6891044609138134841
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3029782315669219994}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4300000, guid: b00a06e965af79a4c917d2b450d64c54, type: 3}
 --- !u!114 &5047594152254546969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,3 +139,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelObjectInfo: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
+--- !u!65 &11717774786805223
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3029782315669219994}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.5882386, y: 0.58823854, z: 0.5813445}
+  m_Center: {x: 0, y: 0, z: -0.002803743}

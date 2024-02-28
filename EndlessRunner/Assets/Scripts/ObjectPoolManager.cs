@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
+    [SerializeField] private Transform _objectPoolLocationTransform;
+    
     [System.Serializable]
     public class Pool
     {
@@ -48,7 +50,7 @@ public class ObjectPoolManager : MonoBehaviour
             {
                 GameObject obj = Instantiate(pool.prefab);
                 obj.SetActive(false);
-                obj.transform.position = Vector3.zero;
+                obj.transform.position = _objectPoolLocationTransform.transform.position;
                 objectPool.Enqueue(obj);
             }
 
@@ -89,11 +91,9 @@ public class ObjectPoolManager : MonoBehaviour
 
         objectToReturn.transform.SetParent(null);
 
-        objectToReturn.transform.position = Vector3.zero;
+        objectToReturn.transform.position = _objectPoolLocationTransform.transform.position;
    
         poolDictionary[objectName].Enqueue(objectToReturn);
-
-       
 
     }
 }

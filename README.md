@@ -51,20 +51,25 @@ Overall, I'm pleased with how the project turned out. I'm happy that I was able 
 
 <img src="Media/DevLog2_FirstPreceduralLevelGenerationAttempt.PNG" width="900"> 
 
-## Known Bugs to adress for the 25.02.2024 - Final Commit: 
+## Known Bugs to adress for the 28.02.2024 - Final Commit: 
 
 1) Object Pooling is not fully adapted. Once the initially instantiated pool is "consumed", the objects that are enqueued from the ReturnToPool() method cause a bug. This issue results in the level generator delaying its functions, causing significant gaps between ground planes. 
 Additionally, the procedural logic fails at that point, as multiple GameObjects tend to spawn on the same segment simultaneously.
 
-2)The order of setting an object's parent changed in the last commit while attempting to solve a scaling issue caused during the parenting and unparenting of pool objects. 
-As a result, the player sometimes hits an unseen object. This issue is entirely due to the level generator's GenerateLevelWithMapData function and the initial selection of spawn positions, causing the player's raycast to hit objects that appear for less than one frame.
-
-3) Occasionally, the level generator creates a structure with no route for the player to move across, represented as:
+2) Occasionally, the level generator creates a structure with no route for the player to move across, represented as:
 
 ```
 oxo
 
 xox 
+```
+
+or
+
+```
+xox
+
+oxo 
 ```
 
 o = empty space, x = platform without ramp
@@ -84,13 +89,6 @@ I attempted to address this in the EnsureGroundPassable() method as follows:
 ```
 
 However, this did not completely solve the issue. The algorithm does not address problems between ground planes; it only resolves issues within segments assigned to a single ground plane. In the limited time I've spent debugging, I noticed this pattern more than once within a ground plane.
-
-4) Changes to scaling in the last commit broke some functionalities, such as the coin placement algorithm.
-
-5) I modified PlayerCollisionDetection.cs to utilize raycasts for solving the ground detection issue. Previously, it relied solely on OnTriggerEnter/OnTriggerExit events on the player's Collider object, which also caused unintended behavior in the coin grabbing logic. 
-I plan to resolve this by including a larger collider on the coin.
-
-6) The Raycast Hit should limit the coin gain count to 1. Due to the logic not being fully polished, players gain more coins than intended when hitting a coin.
 
 ----------
 
