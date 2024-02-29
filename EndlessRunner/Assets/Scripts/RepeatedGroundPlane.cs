@@ -8,6 +8,7 @@ public class RepeatedGroundPlane : MonoBehaviour
     private int _backwardBoundry = -45;
     private float _speedModifier = 1;
 
+    public static bool IsReturningToPool = false;
     private Vector3 repeatPos = new Vector3(0, 0, 170);
 
     private void Start()
@@ -48,6 +49,7 @@ public class RepeatedGroundPlane : MonoBehaviour
     {
         if (transform.position.z < _backwardBoundry)
         {
+            IsReturningToPool = true;
             // Collect all child pool items in a list before processing
             List<PoolItem> childrenPoolItems = new List<PoolItem>();
             foreach (Transform child in transform)
@@ -77,7 +79,14 @@ public class RepeatedGroundPlane : MonoBehaviour
                 ObjectPoolManager.Instance.ReturnToPool(groundPlanePoolItem.levelObjectInfo.ObjectName, gameObject);
                 //Debug.Log("GroundPlane successfully returned to the pool");
             }
+
+            IsReturningToPool = false;
         }
+    }
+
+    public static bool IsReturningToPoolInProgress()
+    {
+        return IsReturningToPool;
     }
 
 

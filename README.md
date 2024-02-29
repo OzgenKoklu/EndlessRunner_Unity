@@ -58,10 +58,7 @@ Using Blender to Fix Mixamo's animations Z movement.
 
 ## Known Bugs to adress for the 29.02.2024 - Final Commit: 
 
-1) Object Pooling is not fully adapted. Once the initially instantiated pool is "consumed", the objects that are enqueued from the ReturnToPool() method cause a bug. This issue results in the level generator delaying its functions, causing significant gaps between ground planes. 
-Additionally, the procedural logic fails at that point, as multiple GameObjects tend to spawn on the same segment simultaneously.
-
-2) Collider logics sometimes does not work as intended. Like changing lanes just before a ramp causing player to fall down and crash.
+1) Collider logics sometimes does not work as intended. Like changing lanes just before a ramp causing player to fall down and crash.
 
 ----------
 

@@ -30,7 +30,6 @@ public class LevelGenerator : MonoBehaviour
 
     private List<Vector3> _lanePositions;
     private float _spawnOffset = 1f;
-    public bool isObjectPoolReady = false;
     private bool _isFirstPlane = true;
 
     public enum SegmentType
@@ -63,9 +62,6 @@ public class LevelGenerator : MonoBehaviour
 
     private void OnPoolInitializationComplete()
     {
-        isObjectPoolReady = true;
-      //  Debug.Log("isObjectPoolReady: " + isObjectPoolReady);
-
         int laneCount = 3;
         int segmentCount = 10;
         _lanePositions = new List<Vector3>();

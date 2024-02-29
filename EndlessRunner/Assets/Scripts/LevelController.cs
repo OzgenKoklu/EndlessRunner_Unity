@@ -2,6 +2,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static Player;
 
@@ -10,13 +11,14 @@ public class LevelController : MonoBehaviour
     [SerializeField] private LevelGenerator _levelGenerator;
 
     private bool _isSpawnedThisUpdate = false;
-    private void Update()
+
+    void LateUpdate()
     {
-        int activeGroundPlanesCount = GameObject.FindGameObjectsWithTag("GroundPlane").Length;
-   
+      //  int activeGroundPlanesCount = GameObject.FindGameObjectsWithTag("GroundPlane").Length;
+
         // Debug.Log("active groundPlanes: " + activeGroundPlanesCount);
         //cant solve the big gap bug, I think spawning logic triggers more than once.
-        if (activeGroundPlanesCount < 4 & !_isSpawnedThisUpdate)
+        if (ObjectPoolManager.Instance.HasGroundPlaneInPool() && !_isSpawnedThisUpdate && !RepeatedGroundPlane.IsReturningToPoolInProgress() && !ObjectPoolManager.Instance.IsObjectPoolingInProgress())
         {
             _levelGenerator.SegmentMap(3, 10);
             _isSpawnedThisUpdate = true;
