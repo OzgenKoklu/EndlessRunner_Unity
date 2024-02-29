@@ -259,7 +259,7 @@ public class Player : MonoBehaviour
     IEnumerator SlidingTimerTrigger()
     {
         // Wait for 1 second
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
 
         _playerState = PlayerState.Running;
         // Set the trigger on the animator

@@ -175,8 +175,8 @@ public class LevelGenerator : MonoBehaviour
         for (int i = 0; i < _mapData.GetLength(0); i++)
         {
             _lastMapLastRowData[i].Type = _mapData[i, (_mapData.GetLength(1) - 1)].Type;
-            Debug.Log(" _lastMapLastRowData[i].Type:" + _lastMapLastRowData[i].Type);
-            Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" + "i: " + i + "j: " + (_mapData.GetLength(1) - 1) + "Type: " + _mapData[i, _mapData.GetLength(1) - 1].Type);
+           // Debug.Log(" _lastMapLastRowData[i].Type:" + _lastMapLastRowData[i].Type);
+           // Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" + "i: " + i + "j: " + (_mapData.GetLength(1) - 1) + "Type: " + _mapData[i, _mapData.GetLength(1) - 1].Type);
         }
     }
 
@@ -383,7 +383,7 @@ public class LevelGenerator : MonoBehaviour
                             {
                                 int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
                                 _mapData[j + randomDirection, i + 1].Type = SegmentType.Empty;
-                                Debug.Log(" Row After blockage cleaned, Emptied space at: J,I(3by10) for ensure passable ground: " + "j:" + (j+randomDirection) + " , i:" + (i + 1));
+                              //  Debug.Log(" Row After blockage cleaned, Emptied space at: J,I(3by10) for ensure passable ground: " + "j:" + (j+randomDirection) + " , i:" + (i + 1));
                             }
                         }
                     }
@@ -391,7 +391,7 @@ public class LevelGenerator : MonoBehaviour
                     {
                         //not that important important, intersegment issues are beyond the scope of this project,
                         //but we might add some extra gap between the planes to avoid generating impossable to pass areas
-                        Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
+                       // Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
                     }
                    
                 }
