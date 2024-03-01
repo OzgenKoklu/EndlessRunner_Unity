@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
                 isHighScore = true
             }); 
             PlayerPrefs.SetInt(PlayerPrefsHighScore, _highScoreSession);
+            PlayerPrefs.Save();
 
             return;
         }
@@ -80,7 +81,6 @@ public class GameManager : MonoBehaviour
         {
             isHighScore = false
         });
-        PlayerPrefs.SetInt(PlayerPrefsHighScore, _highScoreSession);
 
         return;
     }

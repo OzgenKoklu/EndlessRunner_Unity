@@ -1,53 +1,63 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class BlinkingAnimation : MonoBehaviour
 {
     private float _blinkInterval = 0.2f; 
     private float _blinkTimer;
-    bool _blinkTime = false;
+    private bool _shouldBlink = false;
+    private Renderer _renderer;
 
     private void Start()
     {
-        Player.Instance.OnPlayerHealthDecreased += Player_OnPlayerHealthDecreased;
-        Player.Instance.OnInvincibilityPeriodEnd += Player_OnInvincibilityPeriodEnd;
+        // Cache the Renderer component once instead of calling GetComponent multiple times
+        _renderer = GetComponent<Renderer>();
+
+
+        Player.Instance.OnPlayerHealthDecreased += HandlePlayerHealthDecreased;
+        Player.Instance.OnInvincibilityPeriodEnd += HandleInvincibilityPeriodEnd;
     }
 
-    private void Player_OnInvincibilityPeriodEnd(object sender, System.EventArgs e)
+    private void OnDestroy()
     {
-        _blinkTime = false;
+        // Unsubscribe from player events to prevent memory leaks
+        Player.Instance.OnPlayerHealthDecreased -= HandlePlayerHealthDecreased;
+        Player.Instance.OnInvincibilityPeriodEnd -= HandleInvincibilityPeriodEnd;
+    }
 
-
-        //enables renderer if it remains disabled
-        if (!GetComponent<Renderer>().enabled)
+    private void HandleInvincibilityPeriodEnd(object sender, EventArgs e)
+    {
+        _shouldBlink = false;
+        // Directly set the renderer's enabled state instead of toggling it unnecessarily
+        if (!_renderer.enabled)
         {
-            GetComponent<Renderer>().enabled = !GetComponent<Renderer>().enabled;
+            _renderer.enabled = true;
         }
     }
 
-    private void Player_OnPlayerHealthDecreased(object sender, System.EventArgs e)
+    private void HandlePlayerHealthDecreased(object sender, EventArgs e)
     {
-        _blinkTime = true;
+        _shouldBlink = true;
     }
+
 
     private void Update()
     {
-        if (_blinkTime)
+        if (_shouldBlink)
         {
-            Blink();
+            PerformBlink();
         }
     }
 
 
-    private void Blink()
+    private void PerformBlink()
     {
         _blinkTimer += Time.deltaTime;
 
         if (_blinkTimer >= _blinkInterval)
         {
-            GetComponent<Renderer>().enabled = !GetComponent<Renderer>().enabled;
-            _blinkTimer = 0f;
+            _renderer.enabled = !_renderer.enabled; // Toggle visibility
+            _blinkTimer = 0f; // Reset the timer
         }
     }
 }

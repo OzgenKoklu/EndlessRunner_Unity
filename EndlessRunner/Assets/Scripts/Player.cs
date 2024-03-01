@@ -99,6 +99,14 @@ public class Player : MonoBehaviour
         OnCoinCountChanged?.Invoke(this, EventArgs.Empty);
     }
 
+    private void OnDestroy()
+    {
+        _gameInput.OnGoLeftAction -= _gameInput_OnGoLeftAction;
+        _gameInput.OnGoRightAction -= _gameInput_OnGoRightAction;
+        _gameInput.OnJumpAction -= _gameInput_OnJumpAction;
+        _gameInput.OnSlideUnderAction -= _gameInput_OnSlideUnderAction;
+    }
+
     // Call this method to initiate the jump action
     public void Jump()
     {

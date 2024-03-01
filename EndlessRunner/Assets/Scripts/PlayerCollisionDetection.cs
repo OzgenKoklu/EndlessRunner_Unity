@@ -95,7 +95,7 @@ public class PlayerCollisionDetection : MonoBehaviour
                     OnCoinGrabbed?.Invoke(this, EventArgs.Empty);
                 }
 
-                coinBehaviour.GoToObjectPoolLocation();             
+                coinBehaviour.RelocateToCollectedCoinLocation();             
             }
             if (hitBody.transform.tag == "Ramp")
             {
