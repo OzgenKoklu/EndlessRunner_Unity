@@ -64,9 +64,9 @@ public class RepeatedGroundPlane : MonoBehaviour
 
             foreach (var poolItem in childrenPoolItems)
             {
-                if (poolItem.levelObjectInfo != null)
+                if (poolItem.GetLevelObjectSO() != null)
                 {
-                    ObjectPoolManager.Instance.ReturnToPool(poolItem.levelObjectInfo.ObjectName, poolItem.gameObject);
+                    ObjectPoolManager.Instance.ReturnToPool(poolItem.GetLevelObjectSO().ObjectName, poolItem.gameObject);
                     //Debug.Log(poolItem.gameObject.name + " named child successfully returned to the pool");
                 }
 
@@ -74,9 +74,9 @@ public class RepeatedGroundPlane : MonoBehaviour
 
             // Now handle the GroundPlane itself
             PoolItem groundPlanePoolItem = GetComponent<PoolItem>();
-            if (groundPlanePoolItem != null && groundPlanePoolItem.levelObjectInfo != null)
+            if (groundPlanePoolItem != null && groundPlanePoolItem.GetLevelObjectSO() != null)
             {
-                ObjectPoolManager.Instance.ReturnToPool(groundPlanePoolItem.levelObjectInfo.ObjectName, gameObject);
+                ObjectPoolManager.Instance.ReturnToPool(groundPlanePoolItem.GetLevelObjectSO().ObjectName, gameObject);
                 //Debug.Log("GroundPlane successfully returned to the pool");
             }
 

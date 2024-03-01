@@ -79,7 +79,7 @@ public class GameSceneUI: MonoBehaviour
 
     private void Instance_OnScoreChanged(object sender, GameManager.OnScoreChangedEventArgs e)
     {
-        _scoreText.text = e.currentScore.ToString();
+        _scoreText.text = e.CurrentScore.ToString();
     }
 
     private void Hide()

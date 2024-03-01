@@ -1,27 +1,27 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
     [SerializeField] private Transform _objectPoolLocationTransform;
-    
-
 
     [System.Serializable]
     public class Pool
     {
         public string ObjectName;
-        public GameObject prefab;
-        public int size;
+        public GameObject Prefab;
+        public int PoolSize;
     }
 
     public static ObjectPoolManager Instance;
 
     public delegate void OnInitializationComplete();
     public event OnInitializationComplete onInitializationComplete;
-    public bool isPoolReady = false;
-    private bool objectPoolingInProgress = false;
+    private bool _isInPoolInitializationPhase = false;
+
+    public List<Pool> pools;
+    public Dictionary<string, Queue<GameObject>> poolDictionary;
 
     private void Awake()
     {
@@ -30,17 +30,7 @@ public class ObjectPoolManager : MonoBehaviour
         InitializePools();
     }
 
-    public List<Pool> pools;
-    public Dictionary<string, Queue<GameObject>> poolDictionary;
 
-    void Update()
-    {
-        if (!isPoolReady)
-        {
-            onInitializationComplete?.Invoke();
-            isPoolReady = true;
-        }
-    }
     void InitializePools()
     {
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
@@ -49,98 +39,79 @@ public class ObjectPoolManager : MonoBehaviour
         {
             Queue<GameObject> objectPool = new Queue<GameObject>();
 
-            for (int i = 0; i < pool.size; i++)
+            for (int i = 0; i < pool.PoolSize; i++)
             {
-                GameObject obj = Instantiate(pool.prefab);
-                obj.SetActive(false);
-                obj.transform.position = _objectPoolLocationTransform.transform.position;
-                objectPool.Enqueue(obj);
+                GameObject gameObjectInPool = Instantiate(pool.Prefab);
+                gameObjectInPool.SetActive(false);
+                gameObjectInPool.transform.position = _objectPoolLocationTransform.transform.position;
+                objectPool.Enqueue(gameObjectInPool);
             }
 
             poolDictionary.Add(pool.ObjectName, objectPool);
         }
+        _isInPoolInitializationPhase = true;  
+    }
 
-        // Move pool initialization to a separate method called from Awake
-        onInitializationComplete?.Invoke();
+    void Update()
+    {
+        //this is in update due to pool initialization taking too long and levelGenerator misses the event trigger if subbed on start.
+        if (_isInPoolInitializationPhase)
+        {
+            onInitializationComplete?.Invoke();
+            _isInPoolInitializationPhase = false;
+        }
     }
 
     public GameObject SpawnFromPool(string ObjectName, Vector3 position, Quaternion rotation)
     {
-        if (!poolDictionary.ContainsKey(ObjectName))
+        if (!poolDictionary.TryGetValue(ObjectName, out Queue<GameObject> objectQueue))
         {
-            Debug.LogWarning("Pool with tag " + ObjectName + " doesn't exist.");
+            Debug.LogWarning($"Pool with name {ObjectName} doesn't exist.");
             return null;
         }
 
-        if (poolDictionary[ObjectName].Count > 0)
+        if (objectQueue.Count == 0)
         {
-            GameObject objectToSpawn = poolDictionary[ObjectName].Dequeue();
-
-            objectToSpawn.SetActive(true);
-            objectToSpawn.transform.position = position;
-            objectToSpawn.transform.rotation = rotation;
-
-            return objectToSpawn;
+            Debug.LogWarning($"No objects available in pool {ObjectName}");
+            return null; // Or handle expansion logic here
         }
-        else
-        {
-            // Optionally handle the case where there are no objects left in the pool
-            // For example, instantiate a new one or return null
-            return null;
-        }
+
+
+        GameObject objectToSpawn = poolDictionary[ObjectName].Dequeue();
+
+        objectToSpawn.SetActive(true);
+        objectToSpawn.transform.position = position;
+        objectToSpawn.transform.rotation = rotation;
+
+        return objectToSpawn;
     }
 
 
-    public void ReturnToPool(string objectName, GameObject objectToReturn)
+    public void ReturnToPool(string ObjectName, GameObject objectToReturn)
     {
-        objectPoolingInProgress = true;
-        StartCoroutine(ReturnToPoolAsync(objectName, objectToReturn));
-    }
-
-    private IEnumerator ReturnToPoolAsync(string objectName, GameObject objectToReturn)
-    {
-        if (!poolDictionary.ContainsKey(objectName))
+        if (!poolDictionary.TryGetValue(ObjectName, out Queue<GameObject> objectQueue))
         {
-            Debug.LogWarning($"ReturnToPool: Pool with tag {objectName} doesn't exist.");
-            yield break; // Exit if the object name doesn't exist in the dictionary
+            Debug.LogWarning($"ReturnToPool: Pool with tag {ObjectName} doesn't exist.");
+            return;
         }
 
         objectToReturn.SetActive(false);
         objectToReturn.transform.SetParent(null);
         objectToReturn.transform.position = _objectPoolLocationTransform.position;
 
-        // Here you could wait for something, like a fade out animation:
-        // yield return new WaitForSeconds(1f); // Wait for 1 second, for example
-
-        poolDictionary[objectName].Enqueue(objectToReturn);
-
-        // Set your flag here to indicate the task is complete
-        objectPoolingInProgress = false;
+        poolDictionary[ObjectName].Enqueue(objectToReturn);
     }
 
-    public bool IsObjectPoolingInProgress()
-    {
-        return objectPoolingInProgress;
-    }
 
+    //returns if any ground plane in pool that is inactive.
     public bool HasGroundPlaneInPool()
     {
-        string objectName = "GroundPlane"; // Use the exact name used in your pool
-
-        // Check if the pool for GroundPlane exists and has any inactive objects left
-        if (poolDictionary.ContainsKey(objectName) && poolDictionary[objectName].Count > 0)
+        if (!poolDictionary.TryGetValue("GroundPlane", out Queue<GameObject> objectQueue))
         {
-            // Iterate through the queue to check for an inactive object
-            foreach (var item in poolDictionary[objectName])
-            {
-                if (!item.activeInHierarchy) // Check if the object is inactive
-                {
-                    return true; // There is at least one inactive 'GroundPlane' object
-                }
-            }
+            return false; // No GroundPlane pool exists
         }
 
-        return false; // No inactive 'GroundPlane' objects are left in the pool
+        return objectQueue.Any(item => !item.activeInHierarchy);
     }
 
 }

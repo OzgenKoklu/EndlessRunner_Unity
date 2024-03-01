@@ -31,7 +31,7 @@ public class GameOverUI : MonoBehaviour
     private void GameManager_OnGameEnd(object sender, GameManager.OnGameEndEventArgs e)
     {
         Show();
-        if (!e.isHighScore)
+        if (!e.IsHighScore)
         {
             HideHighScoreText();
         }

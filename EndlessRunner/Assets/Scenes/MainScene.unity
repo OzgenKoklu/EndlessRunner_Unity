@@ -4013,7 +4013,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 660413c2896fcc64e926ab67fd656d0a, type: 2}
   _collectableCoin: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
   _groundPlaneSO: {fileID: 11400000, guid: 1e16874166fe542458863372dbf0d20d, type: 2}
-  isObjectPoolReady: 0
 --- !u!114 &1333134292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4906,35 +4905,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectPoolLocationTransform: {fileID: 1834522069}
-  isPoolNotReady: 0
+  isPoolReady: 0
   pools:
   - ObjectName: GroundPlane
-    prefab: {fileID: 3028227022565766675, guid: 26c26ba7b6045544b829e65d2dd62cbe,
+    Prefab: {fileID: 3028227022565766675, guid: 26c26ba7b6045544b829e65d2dd62cbe,
       type: 3}
-    size: 4
+    PoolSize: 4
   - ObjectName: Platform
-    prefab: {fileID: 4295189101463574215, guid: f434b0398f42cb3469a8ae999c9168ca,
+    Prefab: {fileID: 4295189101463574215, guid: f434b0398f42cb3469a8ae999c9168ca,
       type: 3}
-    size: 45
+    PoolSize: 50
   - ObjectName: PlatformWithRamp
-    prefab: {fileID: 1097874212122855823, guid: 9dd872792df3fb446925991a4dccee05,
+    Prefab: {fileID: 1097874212122855823, guid: 9dd872792df3fb446925991a4dccee05,
       type: 3}
-    size: 8
+    PoolSize: 9
   - ObjectName: ObstacleBox
-    prefab: {fileID: 5662577579595787198, guid: 2515dd681ae510b458994f1da35cdcaa,
+    Prefab: {fileID: 5662577579595787198, guid: 2515dd681ae510b458994f1da35cdcaa,
       type: 3}
-    size: 15
+    PoolSize: 10
   - ObjectName: ObstacleCones
-    prefab: {fileID: 820467935722997091, guid: 62e93edf44fa2ba42bd681853f3add77, type: 3}
-    size: 15
+    Prefab: {fileID: 820467935722997091, guid: 62e93edf44fa2ba42bd681853f3add77, type: 3}
+    PoolSize: 10
   - ObjectName: SlidingObstacle
-    prefab: {fileID: 5204321678087703683, guid: e4808d5576a5ec1448ce3ff5b287a26d,
+    Prefab: {fileID: 5204321678087703683, guid: e4808d5576a5ec1448ce3ff5b287a26d,
       type: 3}
-    size: 15
+    PoolSize: 10
   - ObjectName: Coin
-    prefab: {fileID: 3029782315669219994, guid: a1087dc3ad83a4947ab9b920fcf4e3bf,
+    Prefab: {fileID: 3029782315669219994, guid: a1087dc3ad83a4947ab9b920fcf4e3bf,
       type: 3}
-    size: 60
+    PoolSize: 60
 --- !u!1 &1735168109
 GameObject:
   m_ObjectHideFlags: 0

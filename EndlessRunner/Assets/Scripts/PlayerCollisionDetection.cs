@@ -90,7 +90,7 @@ public class PlayerCollisionDetection : MonoBehaviour
                 CoinBehaviour coinBehaviour = hitBody.transform.GetComponent<CoinBehaviour>();
 
                 //Not as intuative since they all go to 0,5,0 relative to their perant object. Not good practice.
-                if (!coinBehaviour.IsCollected)
+                if (!coinBehaviour.IsCoinCollected())
                 {
                     OnCoinGrabbed?.Invoke(this, EventArgs.Empty);
                 }

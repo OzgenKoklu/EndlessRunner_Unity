@@ -100,7 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e912a81c5995f49b551daa35290583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationSpeed: 100
 --- !u!114 &6051265291110236383
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e31148d0e8f958043bd4b3928a063a96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelObjectInfo: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
+  _levelObjectInfo: {fileID: 11400000, guid: aed0a4504d8eea94d90c6d671eb3db33, type: 2}
 --- !u!65 &11717774786805223
 BoxCollider:
   m_ObjectHideFlags: 0

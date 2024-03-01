@@ -15,8 +15,7 @@ public class GamePauseUI : MonoBehaviour
         });
 
         _continueButton.onClick.AddListener(() =>
-        {
-            Hide();
+        {            
             GameManager.Instance.UnpauseGame();
         });
 

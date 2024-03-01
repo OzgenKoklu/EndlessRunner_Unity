@@ -56,9 +56,10 @@ Using Blender to Fix Mixamo's animations Z movement.
 <img src="Media/DevLog3_UsingBlenderToModifyAnimationsZmovement.PNG" width="900"> 
 
 
-## Known Bugs to adress for the 29.02.2024 - Final Commit: 
+## Known Bugs to adress for the 01.03.2024 - Final Commit: 
 
-1) Collider logics sometimes does not work as intended. Like changing lanes just before a ramp causing player to fall down and crash.
+1) Collider logics sometimes does not work as intended. Like changing lanes just before a ramp causing player to fall down and crash. Or jumping on a platform from another platform can cause undetected landing.
+
 
 ----------
 
