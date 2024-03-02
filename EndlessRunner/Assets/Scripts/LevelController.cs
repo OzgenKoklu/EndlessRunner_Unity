@@ -8,7 +8,7 @@ public class LevelController : MonoBehaviour
     {
         if (ObjectPoolManager.Instance.HasGroundPlaneInPool())
         {
-            _levelGenerator.SegmentMap(3, 10);         
+            _levelGenerator.PopulateMapData();
         }
     }
 }

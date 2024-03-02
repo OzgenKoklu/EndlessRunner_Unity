@@ -24,7 +24,7 @@ A simple endless runner game similar to subway surfers. With precedural level ge
 
 More info in VeloGames-task-2-tr.pdf in the root folder.
 
-Zip for 24th of February PC Built can be found in GameBuilds folder. WASD for controls.
+Zip for the newest PC Built can be found in GameBuilds folder. WASD for controls. Old builds can be found in older commits.
 
 ----------
 
@@ -56,10 +56,11 @@ Using Blender to Fix Mixamo's animations Z movement.
 <img src="Media/DevLog3_UsingBlenderToModifyAnimationsZmovement.PNG" width="900"> 
 
 
-## Known Bugs to adress for the 01.03.2024 - Final Commit: 
+## Known Bugs to adress for the 02.03.2024 - Final Commit: 
 
 1) Collider logics sometimes does not work as intended. Like changing lanes just before a ramp causing player to fall down and crash. Or jumping on a platform from another platform can cause undetected landing.
 
+2) TouchscreenSwipeListener.cs is currently empty, will not work with touch screen at this moment, just works with w,a,s,d on the keyboard.
 
 ----------
 

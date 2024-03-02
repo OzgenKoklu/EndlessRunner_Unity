@@ -4905,7 +4905,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectPoolLocationTransform: {fileID: 1834522069}
-  isPoolReady: 0
   pools:
   - ObjectName: GroundPlane
     Prefab: {fileID: 3028227022565766675, guid: 26c26ba7b6045544b829e65d2dd62cbe,
@@ -5669,7 +5668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a06597f49afb8645a75af5c096cd99e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2038552610}
+  _player: {fileID: 2038552610}
 --- !u!95 &2038552612
 Animator:
   serializedVersion: 5

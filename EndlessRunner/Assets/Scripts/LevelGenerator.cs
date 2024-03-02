@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private LevelObjectListSO _levelObjectListSO;
-    [SerializeField] private Transform _groundPlanePrefabTransform;
     [SerializeField] private LevelObjectSO _platformSO;
     [SerializeField] private LevelObjectSO _platformWithRampSO;
     [SerializeField] private List<LevelObjectSO> _obstacleList;
@@ -14,20 +12,14 @@ public class LevelGenerator : MonoBehaviour
 
     private GameObject _lastGroundPlane;
 
-    private Vector3 _generationPosition = new Vector3(0, 0, 0);
+    private Vector3 _firstPlanegenerationPosition = new Vector3(0, 0, 0);
+    private readonly List<Vector3> _lanePositions = new List<Vector3>
+    {
+        new Vector3(-2.3f, 0, 0), // Left lane
+        new Vector3(0, 0, 0),     // Middle lane
+        new Vector3(2.3f, 0, 0)   // Right lane
+    };
 
-    /*
-    private Vector3 _leftLanePosition = new Vector3(-0.35f, 0, 0);
-    private Vector3 _middleLanePosition = new Vector3(0, 0, 0);
-    private Vector3 _rightLanePosition = new Vector3(0.35f, 0, 0);
-    */
-
-    private Vector3 _leftLanePosition = new Vector3(-2.3f, 0, 0);
-    private Vector3 _middleLanePosition = new Vector3(0, 0, 0);
-    private Vector3 _rightLanePosition = new Vector3(2.3f, 0, 0);
-
-    private List<Vector3> _lanePositions;
-    private float _spawnOffset = 1f;
     private bool _isFirstPlane = true;
 
     public enum SegmentType
@@ -43,43 +35,54 @@ public class LevelGenerator : MonoBehaviour
         public SegmentType Type { get; set; }
     }
 
-    //this will be a 3x10 segment map
-    private Segment[,] _mapData;
-
-    //this will be a 3x1 segment map
-    private Segment[] _lastMapLastRowData;
+    private Segment[,] _mapData; //this will be a 3x10 segment map
+    private Segment[] _lastMapLastRowData; //this will be a 3x1 segment map
 
 
     private void Start()
     {
         ObjectPoolManager.Instance.onInitializationComplete += OnPoolInitializationComplete;
-    
 
-        
+        InitializeMapData();
     }
 
     private void OnPoolInitializationComplete()
     {
-        int laneCount = 3;
-        int segmentCount = 10;
-        _lanePositions = new List<Vector3>();
-        _lanePositions.Add(_leftLanePosition);
-        _lanePositions.Add(_middleLanePosition);
-        _lanePositions.Add(_rightLanePosition);
-        SegmentMap(laneCount, segmentCount);
-        // GenerateLevel();
-        ObjectPoolManager.Instance.onInitializationComplete -= OnPoolInitializationComplete;
+        PopulateMapData();
+
+        ObjectPoolManager.Instance.onInitializationComplete -= OnPoolInitializationComplete; //this event will never trigger in this runtime so unsub
     }
 
-    public void SegmentMap(int lanes, int segments)
+    private void InitializeMapData()
     {
-        _mapData = new Segment[lanes, segments];
-        InitializeMap();
+        const int laneCount = 3, rowCount = 10;
+        _mapData = new Segment[laneCount, rowCount];
+
+        _lastMapLastRowData = new Segment[laneCount];
+        for (int i = 0; i < laneCount; i++)
+        {
+            _lastMapLastRowData[i] = new Segment { Type = SegmentType.Empty };
+        }
     }
 
-    private void InitializeMap()
+    public void PopulateMapData()
     {
-        // Initialize the map with empty segments
+         ClearMapData();
+
+        if (_isFirstPlane)
+        {
+            _lastGroundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _firstPlanegenerationPosition, Quaternion.identity);           
+            _isFirstPlane = false;
+        }       
+
+        if (!_isFirstPlane)
+        {
+            GenerateNextGroundPlane();
+        }
+
+    }
+    private void ClearMapData()
+    {
         for (int i = 0; i < _mapData.GetLength(0); i++)
         {
             for (int j = 0; j < _mapData.GetLength(1); j++)
@@ -87,34 +90,79 @@ public class LevelGenerator : MonoBehaviour
                 _mapData[i, j] = new Segment { Type = SegmentType.Empty };
             }
         }
-
-        if (_isFirstPlane)
-        {
-            GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, _generationPosition, Quaternion.identity);
-            _lastGroundPlane = groundPlane;
-
-            //initializes the last row segment map for maps after this to use (to unblock the road)
-
-            _lastMapLastRowData = new Segment[3];
-            for(int i = 0; i < 3; i++)
-            {
-                _lastMapLastRowData[i] = new Segment { Type = SegmentType.Empty };
-            }
-           // Debug.Log("Last row data lenght: " + _lastMapLastRowData.Length);
-        }       
-
-        if (!_isFirstPlane)
-        {
-            Vector3 spawnPosition = _lastGroundPlane.transform.position + new Vector3(0, 0, 70f);
-            GameObject groundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, spawnPosition, Quaternion.identity);
-            _lastGroundPlane = groundPlane;
-            // Populate the map with platforms and ramps
-            PopulateMapWithRampsAndPlatforms();
-            PopulateMapWithObstacles();
-            GenerateLevelWithMapData(groundPlane.transform);
-        }
-        _isFirstPlane = false;
     }
+
+    private void GenerateNextGroundPlane()
+    {
+        Vector3 spawnPosition = _lastGroundPlane.transform.position + new Vector3(0, 0, 70f); //70 is the lenght of the ground plane
+        _lastGroundPlane = ObjectPoolManager.Instance.SpawnFromPool(_groundPlaneSO.ObjectName, spawnPosition, Quaternion.identity);
+
+        // Populate the map with platforms and ramps
+        PopulateMapWithRampsAndPlatforms(); //only populates the segment matrix data
+        PopulateMapWithObstacles(); //only populates the segment matrix data
+        GenerateLevelWithMapData(_lastGroundPlane.transform); //physically puts gameobjects in the ground plane
+        PopulateMapWithCollectibles(_lastGroundPlane.transform); //physically puts gameobjects in the ground plane
+    }
+
+    private void GenerateLevelWithMapData(Transform groundPlaneTransform)
+    {
+        // Calculate the segment size in the Z direction
+        float segmentSize = 70f / _mapData.GetLength(1);
+
+        for (int laneIndex = 0; laneIndex < _mapData.GetLength(0); laneIndex++)
+        {
+
+            for (int segmentIndex = 0; segmentIndex < _mapData.GetLength(1); segmentIndex++)
+            {
+                // Calculate the position of the segment based on laneIndex and segmentIndex
+                float posX = _lanePositions[laneIndex].x;
+                //Debug.Log(posX);
+                float posZ = -5f + segmentSize * (segmentIndex + 0.5f);
+                // Debug.Log(segmentSize);
+                Vector3 segmentPosition = new Vector3(posX, 0, posZ);
+
+
+                Segment segment = _mapData[laneIndex, segmentIndex];
+
+                if (segment.Type == SegmentType.PlatformWithRamp)
+                {
+                    // Instantiate the platform with ramp prefab
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
+                    //GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity);
+                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                    newGameObject.transform.SetParent(groundPlaneTransform);
+
+
+                }
+                else if (segment.Type == SegmentType.Platform)
+                {
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
+                    //GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity);
+                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                    newGameObject.transform.SetParent(groundPlaneTransform);
+
+                }
+                else if (segment.Type == SegmentType.Obstacle)
+                {
+
+                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
+                    int randomValue = UnityEngine.Random.Range(0, 3);
+                    //Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
+                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity);
+                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                    newGameObject.transform.SetParent(groundPlaneTransform);
+                }
+                else
+                {
+
+                }
+
+            }
+        }
+    }
+
 
 
     private void PopulateMapWithRampsAndPlatforms()
@@ -156,21 +204,15 @@ public class LevelGenerator : MonoBehaviour
 
         // Ensure at least one lane is passable on the ground level
         EnsureGroundPassable();
+        SaveTheLastRowData();
+    }
 
-        /*
-        for(int i = 0; i< _mapData.GetLength(0); i++)
-        {
-            Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" +"i: " + i + "j: "  + (_mapData.GetLength(1) - 1) + "Type: "+ _mapData[i,_mapData.GetLength(1) - 1].Type);
-        }
-        */
-        
-
+    private void SaveTheLastRowData()
+    {
         //logging the last row of the road to ensure pathway next time map is generated.
         for (int i = 0; i < _mapData.GetLength(0); i++)
         {
             _lastMapLastRowData[i].Type = _mapData[i, (_mapData.GetLength(1) - 1)].Type;
-           // Debug.Log(" _lastMapLastRowData[i].Type:" + _lastMapLastRowData[i].Type);
-           // Debug.Log("Last Row of the map - enum types: i x j (3 x 10 ):" + "i: " + i + "j: " + (_mapData.GetLength(1) - 1) + "Type: " + _mapData[i, _mapData.GetLength(1) - 1].Type);
         }
     }
 
@@ -286,37 +328,27 @@ public class LevelGenerator : MonoBehaviour
     }
 
     private bool RandomShouldAddObstacle()
-    {
-        // Implement your logic for adding platforms
-        // Example: Return true with a certain probability
+    {       
         return UnityEngine.Random.Range(0f, 1f) < 0.5f;
     }
     private bool RandomShouldAddCollectable()
-    {
-        // Implement your logic for adding platforms
-        // Example: Return true with a certain probability
-        return UnityEngine.Random.Range(0f, 1f) < 0.5f;
+    {      
+        return UnityEngine.Random.Range(0f, 1f) < 0.7f;
     }
 
     private bool RandomShouldAddPlatform()
-    {
-        // Implement your logic for adding platforms
-        // Example: Return true with a certain probability
+    {      
         return UnityEngine.Random.Range(0f, 1f) < 0.5f;
     }
 
     private bool RandomShouldAddPlatformWithRamp()
-    {
-        // Implement your logic for adding platforms with ramps
-        // Example: Return true with a certain probability
+    {       
         return UnityEngine.Random.Range(0f, 1f) < 0.3f;
     }
 
     private bool RandomShouldAddPlatformNext()
-    {
-        // Implement your logic for adding platform next to a ramp
-        // Example: Return true with a certain probability
-        return UnityEngine.Random.Range(0f, 1f) < 0.5f;
+    {       
+        return UnityEngine.Random.Range(0f, 1f) < 0.7f;
     }
 
     private void EnsureGroundPassable()
@@ -385,7 +417,7 @@ public class LevelGenerator : MonoBehaviour
                     {
                         //not that important important, intersegment issues are beyond the scope of this project,
                         //but we might add some extra gap between the planes to avoid generating impossable to pass areas
-                       // Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
+                       Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
                     }
                    
                 }
@@ -423,67 +455,6 @@ public class LevelGenerator : MonoBehaviour
         return false;
     }
 
-    private void GenerateLevelWithMapData(Transform groundPlaneTransform)
-    {
-       // GameObject groundPlane = Instantiate(_groundPlanePrefabTransform.gameObject, _generationPosition, Quaternion.identity);
-
-        // Calculate the segment size in the Z direction
-        float segmentSize = 70f / _mapData.GetLength(1);
-
-        for (int laneIndex = 0; laneIndex < _mapData.GetLength(0); laneIndex++)
-        {
-           
-            for (int segmentIndex = 0; segmentIndex < _mapData.GetLength(1); segmentIndex++)
-            {
-                // Calculate the position of the segment based on laneIndex and segmentIndex
-                float posX = _lanePositions[laneIndex].x;
-                //Debug.Log(posX);
-                float posZ = -5f + segmentSize * (segmentIndex + 0.5f);
-               // Debug.Log(segmentSize);
-                Vector3 segmentPosition = new Vector3(posX, 0, posZ);
-                
-
-                Segment segment = _mapData[laneIndex, segmentIndex];
-
-                if (segment.Type == SegmentType.PlatformWithRamp)
-                {
-                    // Instantiate the platform with ramp prefab
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z -35f); ;
-                    //GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-
-
-                }
-                else if(segment.Type == SegmentType.Platform)
-                {
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
-                    //GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-
-                }
-                else if(segment.Type == SegmentType.Obstacle)
-                {
-
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z -35f); ;
-                    int randomValue = UnityEngine.Random.Range(0, 3);
-                    //Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-                }
-                else {
-
-                }
-
-            }
-        }
-
-        PopulateMapWithCollectibles(groundPlaneTransform.transform);
-
-    }
+   
 
 }

@@ -47,12 +47,6 @@ public class Player : MonoBehaviour
 
     private bool _isPlayerInTransition = false;
 
-    //henüz kullanmadým ama düþünücem
-    public event EventHandler<OnPlayerStateChangedEventArgs> OnPlayerStateChanged;  
-    public class OnPlayerStateChangedEventArgs: EventArgs { public PlayerState PlayerState; }
-
-
-
     private PlayerState _playerState;
 
 
@@ -281,7 +275,7 @@ public class Player : MonoBehaviour
 
         if (IsCharacterOnTheTrack() && !IsPlayerJumping())
         {
-            SelectMovePosition(Direction.Right);
+            SelectTargetPosition(Direction.Right);
         }      
     }
 
@@ -292,11 +286,11 @@ public class Player : MonoBehaviour
 
         if (IsCharacterOnTheTrack() && !IsPlayerJumping())
         {
-            SelectMovePosition(Direction.Left);
+            SelectTargetPosition(Direction.Left);
         }     
     }
     
-    private void SelectMovePosition(Direction direction)
+    private void SelectTargetPosition(Direction direction)
     {
        switch(direction)
        {
@@ -433,7 +427,6 @@ public class Player : MonoBehaviour
 
     private void MoveCharacterToTrack()
     {
-
         Vector3 newTargetPosition = FindClosestPath();
         // Smoothly move the character towards the target position using Lerp
         transform.position = Vector3.Lerp(transform.position, newTargetPosition, Time.deltaTime * _playerSpeed);

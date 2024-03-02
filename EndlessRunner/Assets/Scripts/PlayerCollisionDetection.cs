@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static Player;
 
 public class PlayerCollisionDetection : MonoBehaviour
 {
@@ -12,37 +9,41 @@ public class PlayerCollisionDetection : MonoBehaviour
     public event EventHandler OnWallObstacleHit;
     public event EventHandler OnObstacleHit;
     public event EventHandler OnCoinGrabbed;
-    private bool _isGroundContactLost = false;
     private float _timerForGroundedCheck = 0;
 
     [SerializeField] private Transform _raycastPointFeet;
     [SerializeField] private Transform _raycastPointBody;
 
+    private const float RaycastLength = 0.5f;
 
-    // Update is called once per frame
     void Update()
     {
-        float raycastLength = 0.5f;
+        CheckGroundStatus();
 
+        CheckBodyCollisions();
+
+        DebugRaycasts();
+    }
+
+    private void CheckGroundStatus()
+    {
         Vector3 feetOrigin = _raycastPointFeet.position;
-        Vector3 bodyOrigin = _raycastPointBody.position;
 
         RaycastHit hitFeet;
-        RaycastHit hitBody;
 
-        bool canFall = !Physics.Raycast(feetOrigin, Vector3.down, out hitFeet, raycastLength);
+        bool canFall = !Physics.Raycast(feetOrigin, Vector3.down, out hitFeet, RaycastLength);
 
         if (canFall)
         {
             _timerForGroundedCheck += Time.deltaTime;
             if (_timerForGroundedCheck > 0.1f && !Player.Instance.IsPlayerMoving())
             {
-               // _isGroundContactLost = true;
+                // _isGroundContactLost = true;
                 OnGroundContactLost?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        if (Physics.Raycast(feetOrigin, Vector3.down, out hitFeet, raycastLength))
+        if (Physics.Raycast(feetOrigin, Vector3.down, out hitFeet, RaycastLength))
         {
             Debug.Log(hitFeet.transform.tag);
             if (hitFeet.transform.tag == "GroundPlane")
@@ -64,14 +65,20 @@ public class PlayerCollisionDetection : MonoBehaviour
                 _timerForGroundedCheck = 0;
             }
         }
+    }
+    private void CheckBodyCollisions()
+    {
+        Vector3 bodyOrigin = _raycastPointBody.position;
 
-        if (Physics.Raycast(bodyOrigin, Vector3.forward, out hitBody, raycastLength))
+        RaycastHit hitBody;
+
+        if (Physics.Raycast(bodyOrigin, Vector3.forward, out hitBody, RaycastLength))
         {
             if (hitBody.transform.tag == "SlideObstacle")
             {
                 Debug.Log("Is player sliding: " + Player.Instance.IsPlayerSliding());
                 if (Player.Instance.IsPlayerSliding()) return;
-                 OnObstacleHit?.Invoke(this, EventArgs.Empty);
+                OnObstacleHit?.Invoke(this, EventArgs.Empty);
             }
 
             if (hitBody.transform.tag == "JumpObstacle")
@@ -95,7 +102,7 @@ public class PlayerCollisionDetection : MonoBehaviour
                     OnCoinGrabbed?.Invoke(this, EventArgs.Empty);
                 }
 
-                coinBehaviour.RelocateToCollectedCoinLocation();             
+                coinBehaviour.RelocateToCollectedCoinLocation();
             }
             if (hitBody.transform.tag == "Ramp")
             {
@@ -104,18 +111,18 @@ public class PlayerCollisionDetection : MonoBehaviour
 
         }
 
-        if (Physics.Raycast(bodyOrigin, Vector3.left, out hitBody, raycastLength))
+        if (Physics.Raycast(bodyOrigin, Vector3.left, out hitBody, RaycastLength))
         {
             //modify for obstacles also
             if (hitBody.transform.tag == "WallObstacle")
             {
-                
+
                 //should not directly die if this hits to the wall while moving sideways
                 OnWallObstacleHit?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        if (Physics.Raycast(bodyOrigin, Vector3.right, out hitBody, raycastLength))
+        if (Physics.Raycast(bodyOrigin, Vector3.right, out hitBody, RaycastLength))
         {
             //modify for obstacles also
             if (hitBody.transform.tag == "WallObstacle")
@@ -124,12 +131,16 @@ public class PlayerCollisionDetection : MonoBehaviour
                 OnWallObstacleHit?.Invoke(this, EventArgs.Empty);
             }
         }
+    }
 
-
-        // Debug visualization (optional)
-        Debug.DrawRay(feetOrigin, Vector3.down * raycastLength, Color.red);
-        Debug.DrawRay(bodyOrigin, Vector3.forward * raycastLength, Color.green);
-
+    private void DebugRaycasts()
+    {
+        Vector3 feetOrigin = _raycastPointFeet.position;
+        Vector3 bodyOrigin = _raycastPointBody.position;
+        Debug.DrawRay(feetOrigin, Vector3.down * RaycastLength, Color.red);
+        Debug.DrawRay(bodyOrigin, Vector3.forward * RaycastLength, Color.green);
+        Debug.DrawRay(bodyOrigin, Vector3.left * RaycastLength, Color.blue);
+        Debug.DrawRay(bodyOrigin, Vector3.right * RaycastLength, Color.yellow);
     }
 
 }

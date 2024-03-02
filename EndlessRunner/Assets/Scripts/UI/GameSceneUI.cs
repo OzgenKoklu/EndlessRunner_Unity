@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameSceneUI: MonoBehaviour
-{
-    [SerializeField] private Player _player;
+{ 
     [SerializeField] private Transform _hearthTemplate;
     [SerializeField] private Transform _hearthContainer;
     [SerializeField] private TextMeshProUGUI _scoreText;
@@ -26,8 +23,8 @@ public class GameSceneUI: MonoBehaviour
     {
         Player.Instance.OnPlayerHealthDecreased += Player_OnHealthChanged;
         Player.Instance.OnCoinCountChanged += PLayer_OnCoinCountChanged;
-        GameManager.Instance.OnScoreChanged += Instance_OnScoreChanged;
-        GameManager.Instance.OnHighScoreBeaten += Instance_OnHighScoreBeaten;
+        GameManager.Instance.OnScoreChanged += GameManager_OnScoreChanged;
+        GameManager.Instance.OnHighScoreBeaten += GameManager_OnHighScoreBeaten;
         GameManager.Instance.OnGameEnd += GameManager_OnGameEnd;
         GameManager.Instance.OnScoreMultiplierChanged += GameManager_OnScoreMultiplierChanged;
         UpdateVisual();
@@ -71,13 +68,13 @@ public class GameSceneUI: MonoBehaviour
         Hide();
     }
 
-    private void Instance_OnHighScoreBeaten(object sender, System.EventArgs e)
+    private void GameManager_OnHighScoreBeaten(object sender, System.EventArgs e)
     {
         _newHighText.gameObject.SetActive(true);
         _scoreText.color = Color.green;
     }
 
-    private void Instance_OnScoreChanged(object sender, GameManager.OnScoreChangedEventArgs e)
+    private void GameManager_OnScoreChanged(object sender, GameManager.OnScoreChangedEventArgs e)
     {
         _scoreText.text = e.CurrentScore.ToString();
     }
