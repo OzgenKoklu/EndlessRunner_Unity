@@ -37,6 +37,7 @@ public class LevelGenerator : MonoBehaviour
 
     private Segment[,] _mapData; //this will be a 3x10 segment map
     private Segment[] _lastMapLastRowData; //this will be a 3x1 segment map
+    private float _rowLenght;
 
 
     private void Start()
@@ -58,11 +59,14 @@ public class LevelGenerator : MonoBehaviour
         const int laneCount = 3, rowCount = 10;
         _mapData = new Segment[laneCount, rowCount];
 
+        _rowLenght = 70f / rowCount; //row lenght for segment location calculations, 70 is the Z size of the ground plane
+
         _lastMapLastRowData = new Segment[laneCount];
         for (int i = 0; i < laneCount; i++)
         {
             _lastMapLastRowData[i] = new Segment { Type = SegmentType.Empty };
         }
+   
     }
 
     public void PopulateMapData()
@@ -106,64 +110,58 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateLevelWithMapData(Transform groundPlaneTransform)
     {
-        // Calculate the segment size in the Z direction
-        float segmentSize = 70f / _mapData.GetLength(1);
+        float rowLenght = 70f / _mapData.GetLength(1);// Calculate the segment size in the Z direction
 
         for (int laneIndex = 0; laneIndex < _mapData.GetLength(0); laneIndex++)
         {
 
-            for (int segmentIndex = 0; segmentIndex < _mapData.GetLength(1); segmentIndex++)
+            for (int rowIndex = 0; rowIndex < _mapData.GetLength(1); rowIndex++)
             {
-                // Calculate the position of the segment based on laneIndex and segmentIndex
-                float posX = _lanePositions[laneIndex].x;
-                //Debug.Log(posX);
-                float posZ = -5f + segmentSize * (segmentIndex + 0.5f);
-                // Debug.Log(segmentSize);
-                Vector3 segmentPosition = new Vector3(posX, 0, posZ);
-
-
-                Segment segment = _mapData[laneIndex, segmentIndex];
-
-                if (segment.Type == SegmentType.PlatformWithRamp)
-                {
-                    // Instantiate the platform with ramp prefab
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
-                    //GameObject newGameObject = Instantiate(_platformWithRampSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-
-
-                }
-                else if (segment.Type == SegmentType.Platform)
-                {
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
-                    //GameObject newGameObject = Instantiate(_platformSO.Prefab.gameObject, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-
-                }
-                else if (segment.Type == SegmentType.Obstacle)
-                {
-
-                    Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, groundPlaneTransform.position.z - 35f); ;
-                    int randomValue = UnityEngine.Random.Range(0, 3);
-                    //Transform newGameObject = Instantiate(_obstacleList[randomValue].Prefab, spawnPosition, Quaternion.identity, groundPlaneTransform.transform);
-                    GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity);
-                    newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
-                    newGameObject.transform.SetParent(groundPlaneTransform);
-                }
-                else
-                {
-
-                }
-
+                HandleSegmentPopulation(laneIndex, rowIndex, groundPlaneTransform);
             }
         }
     }
 
+    private void HandleSegmentPopulation(int laneIndex, int rowIndex, Transform groundPlaneTransform)
+    {
+        // Calculate the position of the segment based on laneIndex and segmentIndex
+        float posX = _lanePositions[laneIndex].x;     
+        float posZ = -5f + _rowLenght * (rowIndex + 0.5f); //-5 is offset
+        Vector3 segmentPosition = new Vector3(posX, 0, posZ); //based on assumption that map datas origin is at 0,0,0
 
+        Segment segment = _mapData[laneIndex, rowIndex];
+
+        PopulateSegmentWithGameObject(segment.Type, segmentPosition, groundPlaneTransform);
+    }
+
+    private void PopulateSegmentWithGameObject(SegmentType segmentType, Vector3 segmentPosition, Transform parentTransform)
+    {
+        Vector3 spawnPosition = segmentPosition + new Vector3(0, 0, parentTransform.position.z - 35f); //adding the parents tranform.pos.z to the calculated segment pos.
+
+        GameObject newGameObject;
+        switch (segmentType)
+        {
+            case SegmentType.PlatformWithRamp:
+                newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformWithRampSO.ObjectName, spawnPosition, Quaternion.identity);
+                newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                newGameObject.transform.SetParent(parentTransform);
+                break;
+            case SegmentType.Platform:
+                newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_platformSO.ObjectName, spawnPosition, Quaternion.identity);
+                newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                newGameObject.transform.SetParent(parentTransform);
+                break;
+            case SegmentType.Obstacle:
+                int randomValue = UnityEngine.Random.Range(0, 3);
+                newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_obstacleList[randomValue].ObjectName, spawnPosition, Quaternion.identity);
+                newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(spawnPosition);
+                newGameObject.transform.SetParent(parentTransform);
+                break;
+            case SegmentType.Empty:
+                //spawn nothing, newGameObject is null so no need to worry about it for the garbage collector, 
+                break;
+        }
+    }
 
     private void PopulateMapWithRampsAndPlatforms()
     {
@@ -218,32 +216,30 @@ public class LevelGenerator : MonoBehaviour
 
     private void PopulateMapWithCollectibles(Transform groundPlaneTransform)
     {
-        // This can happen after the map is generated since collectibles won't be hardcoded into segment area with an enum; they will spawn on top of the ramps and platforms
+        // Coin generation will happen after the map is generated since collectibles won't be hardcoded into segment area with an enum; they will spawn on top of the ramps and platforms
         bool coinLimitAchieved = false;
-        //to ensure only one string of coins occur in the generated map
-        bool notSpawnedInThisSegment = true;
-        int coinCount = 0;
-        float segmentSize = 70f / _mapData.GetLength(1);
+        bool notSpawnedInThisRow = true;
+        int coinCount = 0;     
 
         for (int j = 0; j < _mapData.GetLength(1); j++)
         {
-            notSpawnedInThisSegment = true;
+            notSpawnedInThisRow = true;
             for (int i = 0; i < _mapData.GetLength(0); i++)
-            {              
-                // If this segment is a ramp OR the segment before this is not empty (meaning that it can be after an obstacle or after a ramp/platform), spawn coins if RNG sees it fit
-                //if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || !IsCrossNeighborSegmentEmpty(i, j, 0, -1))
-                if ((_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Obstacle) && notSpawnedInThisSegment)
+            {
+                // If this segment is a ramp OR the segment before this is not empty (meaning that it can be after an obstacle or after a ramp/platform), spawn coins if RNG sees it fit              
+                if ((_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Obstacle) && notSpawnedInThisRow)
                 {
-                    if (RandomShouldAddCollectable() && !coinLimitAchieved && coinCount < 15)
+                    if (RandomShouldAddCollectable() && !coinLimitAchieved)
                     {
-                        notSpawnedInThisSegment = false;
+                        notSpawnedInThisRow = false;
                         float posX = _lanePositions[i].x;
 
                         //-35'den +35'e 10 segment var. Segmentlerin tanesi 7 birim olacak, segment baþýnda deðil 0.4 sonrasýnda baþlýyor.
-                        float posZ = -35f + segmentSize * (j + 0.3f);
+                        float posZ = -35f + _rowLenght * (j + 0.3f);
 
                         Vector3 segmentPosition = new Vector3(0, 0, 0);
 
+                        //ads Y component to spawnPosition if coin will be spawned on a platform or a ramp
                         if (_mapData[i, j].Type == SegmentType.PlatformWithRamp || _mapData[i, j].Type == SegmentType.Platform)
                         {
                             segmentPosition = new Vector3(posX, 2f, posZ);
@@ -253,29 +249,27 @@ public class LevelGenerator : MonoBehaviour
                             segmentPosition = new Vector3(posX, 0, posZ);
                         }
 
-                        //Segment segment = _mapData[i, j];
+                        int randomCoinCount = UnityEngine.Random.Range(2, 8); //nin 3 max 7 in a streak
 
-                        Vector3 spawnPosition = groundPlaneTransform.TransformPoint(segmentPosition);
-
-                        // Spawn 5 coins with a 0.05f gap between them
-                        for (int k = 0; k < 5; k++)
-                        {                           
-                            Vector3 coinSpawnPosition =  new Vector3(segmentPosition.x +groundPlaneTransform.position.x,groundPlaneTransform.position.y+ segmentPosition.y,groundPlaneTransform.position.z+ segmentPosition.z +(k * 0.6f));                         
+                        for (int k = 0; k <= randomCoinCount; k++)
+                        {
+                            Vector3 coinSpawnPosition = new Vector3(segmentPosition.x + groundPlaneTransform.position.x, groundPlaneTransform.position.y + segmentPosition.y, groundPlaneTransform.position.z + segmentPosition.z + (k * 0.8f));
                             GameObject newGameObject = ObjectPoolManager.Instance.SpawnFromPool(_collectableCoin.ObjectName, coinSpawnPosition, Quaternion.identity);
-                            newGameObject.GetComponent<PivotAdjustmentForObject>()?.SetPosition(coinSpawnPosition);
+                            newGameObject?.GetComponent<PivotAdjustmentForObject>()?.SetPosition(coinSpawnPosition);
                             newGameObject.transform.SetParent(groundPlaneTransform);
                         }
 
-                        coinCount += 5; // Increment coin count by 5 for the 5 coins spawned
+                        coinCount += randomCoinCount;
+
                     }
+                } 
+                if (coinCount >= 15) // Set a limit for the total number of coins, yet with how algoritm is working this will end up generating a maximum of 21 coins per plane on edge case
+                {
+                    coinLimitAchieved = true;
+                    break; // Break the loop if the coin limit is achieved
                 }
             }
-
-            if (coinCount >= 15) // Set a limit for the total number of coins
-            {
-                coinLimitAchieved = true;
-                break; // Break the loop if the coin limit is achieved
-            }
+          
         }
     }
 
@@ -409,15 +403,13 @@ public class LevelGenerator : MonoBehaviour
                             {
                                 int randomDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
                                 _mapData[j + randomDirection, i + 1].Type = SegmentType.Empty;
-                              //  Debug.Log(" Row After blockage cleaned, Emptied space at: J,I(3by10) for ensure passable ground: " + "j:" + (j+randomDirection) + " , i:" + (i + 1));
                             }
                         }
                     }
                     catch(IndexOutOfRangeException e)
                     {
-                        //not that important important, intersegment issues are beyond the scope of this project,
-                        //but we might add some extra gap between the planes to avoid generating impossable to pass areas
-                       Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
+                       //not that important important, intersegment issues are beyond the scope of this project
+                      // Debug.Log("Out of index error: " + e.Message + "Intex J(3 segment part): " + j + " - Intex I(10 segment Part):" + i);
                     }
                    
                 }
@@ -441,20 +433,17 @@ public class LevelGenerator : MonoBehaviour
         return false;
     }
 
-    private bool IsCrossNeighborSegmentEmpty(int laneIndex, int segmentIndex, int delta, int deltaSegment)
+    private bool IsCrossNeighborSegmentEmpty(int laneIndex, int rowIndex, int delta, int deltaRow)
     {
         // Check if the neighboring segment at laneIndex + delta is within bounds
-        if ((laneIndex + delta >= 0 && laneIndex + delta < _mapData.GetLength(0)) && (segmentIndex + deltaSegment >= 0 && segmentIndex + deltaSegment < _mapData.GetLength(1)))
+        if ((laneIndex + delta >= 0 && laneIndex + delta < _mapData.GetLength(0)) && (rowIndex + deltaRow >= 0 && rowIndex + deltaRow < _mapData.GetLength(1)))
         {
             // Check if the neighboring segment at laneIndex + delta is empty
-            if (_mapData[laneIndex + delta, segmentIndex + deltaSegment].Type == SegmentType.Empty)
+            if (_mapData[laneIndex + delta, rowIndex + deltaRow].Type == SegmentType.Empty)
             {
                 return true;
             }
         }
         return false;
     }
-
-   
-
 }

@@ -14,7 +14,6 @@ public class Player : MonoBehaviour
     private Vector3 _upperPlanePosition = new Vector3(0, 2f, 0);
     private Vector3 _lowerPlanePosition = new Vector3(0, 0, 0);
 
-
     [SerializeField] private GameInput _gameInput;
     [SerializeField] private PlayerCollisionDetection _playerCollisionDetection;
 
@@ -40,12 +39,10 @@ public class Player : MonoBehaviour
     private bool _isMoving = false;
     private float _playerSpeedModifier = 1;
 
-    private bool _isJumping = false;
-    private Vector3 _originalPosition;
+    private bool _isJumpingTransformLerpInProgress = false;
+    private Vector3 _positionBeforeJump;
     private float _jumpHeight = 1.5f; // Height to jump
     private float _jumpSpeed = 3f;
-
-    private bool _isPlayerInTransition = false;
 
     private PlayerState _playerState;
 
@@ -72,6 +69,31 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        SubscribeToEvents();
+
+        InitializeGameConditions();  
+    }
+
+    private void InitializeGameConditions()
+    {
+        _playerState = PlayerState.Running;
+        _isInvincible = false;
+        _isJumpingTransformLerpInProgress = false;
+        _isMoving = false;
+        _playerCoinCount = 0;
+        _playerHealth = 3;
+        _playerSpeed = _initialPlayerSpeed;
+        _playerSpeedModifier = 1;
+        OnCoinCountChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromEvents();
+    }
+
+    private void SubscribeToEvents()
+    {
         _gameInput.OnGoLeftAction += _gameInput_OnGoLeftAction;
         _gameInput.OnGoRightAction += _gameInput_OnGoRightAction;
         _gameInput.OnJumpAction += _gameInput_OnJumpAction;
@@ -83,44 +105,40 @@ public class Player : MonoBehaviour
         _playerCollisionDetection.OnObstacleHit += _playerCollisionDetection_OnObstacleHit;
         _playerCollisionDetection.OnCoinGrabbed += _playerCollisionDetection_OnCoinGrabbed;
         GameManager.Instance.OnScoreMultiplierChanged += GameManager_OnScoreMultiplierChanged;
-
-        _playerState = PlayerState.Running;
-         _isInvincible = false ;
-        _isMoving = false;
-        _playerCoinCount = 0;
-        _playerSpeed = _initialPlayerSpeed;
-        _playerSpeedModifier = 1;
-        OnCoinCountChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnDestroy()
+    private void UnsubscribeFromEvents()
     {
         _gameInput.OnGoLeftAction -= _gameInput_OnGoLeftAction;
         _gameInput.OnGoRightAction -= _gameInput_OnGoRightAction;
         _gameInput.OnJumpAction -= _gameInput_OnJumpAction;
         _gameInput.OnSlideUnderAction -= _gameInput_OnSlideUnderAction;
+        _playerCollisionDetection.OnGroundHit -= _playerCollisionDetection_OnGroundHit;
+        _playerCollisionDetection.OnRampContact -= _playerCollisionDetection_OnRampContact;
+        _playerCollisionDetection.OnGroundContactLost -= _playerCollisionDetection_OnGroundContactLost;
+        _playerCollisionDetection.OnWallObstacleHit -= _playerCollisionDetection_OnWallObstacleHit;
+        _playerCollisionDetection.OnObstacleHit -= _playerCollisionDetection_OnObstacleHit;
+        _playerCollisionDetection.OnCoinGrabbed -= _playerCollisionDetection_OnCoinGrabbed;
+        GameManager.Instance.OnScoreMultiplierChanged -= GameManager_OnScoreMultiplierChanged;
     }
-
-    // Call this method to initiate the jump action
-    public void Jump()
+    private void Jump()
     {
-        if (!_isJumping)
+        if (!_isJumpingTransformLerpInProgress)
         {
-            _isJumping = true;
-            _originalPosition = transform.position;
+            _isJumpingTransformLerpInProgress = true;
+            _positionBeforeJump = transform.position;
             StartCoroutine(PerformJump());
         }
     }
-    // Coroutine for performing the jump
     private IEnumerator PerformJump()
     {
-        Vector3 targetPosition = _originalPosition + Vector3.up * _jumpHeight; // Calculate target position for the jump
+        Vector3 targetPosition = _positionBeforeJump + Vector3.up * _jumpHeight; // Calculate target position for the jump
 
         // Smoothly transition the player's Y position to the target position
         float elapsedTime = 0f;
         while (elapsedTime < 1f)
         {
-            transform.position = Vector3.Lerp(_originalPosition, targetPosition, elapsedTime);
+            transform.position = Vector3.Lerp(_positionBeforeJump, targetPosition, elapsedTime);
             elapsedTime += Time.deltaTime * _jumpSpeed; // Adjust jump speed as needed
             yield return null;
         }
@@ -129,12 +147,12 @@ public class Player : MonoBehaviour
         elapsedTime = 0f;
         while (elapsedTime < 1f)
         {
-            transform.position = Vector3.Lerp(targetPosition, _originalPosition, elapsedTime);
+            transform.position = Vector3.Lerp(targetPosition, _positionBeforeJump, elapsedTime);
             elapsedTime += Time.deltaTime * _jumpSpeed; // Adjust jump speed as needed
             yield return null;
         }
 
-        //this is to avoid player staying in the air
+        //this is to avoid player staying in the air when jump is made on the platform. A better handling of the situation like "falling" state might come handy
         if(_playerState == PlayerState.Jumping)
         {
             //player still didnt make any contact with ground lets trigger fall animation
@@ -143,14 +161,14 @@ public class Player : MonoBehaviour
             elapsedTime = 0f;
             while (elapsedTime < 1f)
             {
-                transform.position = Vector3.Lerp(_originalPosition, newTargetPosition, elapsedTime);
+                transform.position = Vector3.Lerp(_positionBeforeJump, newTargetPosition, elapsedTime);
                 elapsedTime += Time.deltaTime * _jumpSpeed; // Adjust jump speed as needed
                 yield return null;
             }
             
         }
         // Reset jumping state after completing the jump
-        _isJumping = false;
+        _isJumpingTransformLerpInProgress = false;
     }
 
     private void GameManager_OnScoreMultiplierChanged(object sender, EventArgs e)
@@ -158,8 +176,6 @@ public class Player : MonoBehaviour
         _playerSpeedModifier = GameManager.Instance.GetSpeedModifier();
        
         _playerSpeed = _initialPlayerSpeed * _playerSpeedModifier;
-
-      //  Debug.Log(_playerSpeed);
     }
 
     private void _playerCollisionDetection_OnCoinGrabbed(object sender, EventArgs e)
@@ -219,14 +235,12 @@ public class Player : MonoBehaviour
     private void _playerCollisionDetection_OnGroundContactLost(object sender, EventArgs e)
     {
         Vector3 _newCharacterPosition = new Vector3(transform.position.x, _lowerPlanePosition.y, transform.position.z);
-        Debug.Log("LowerPlanePosition Triggered");
         _targetPosition = _newCharacterPosition;
         _isMoving = true;
     }
 
     private void _playerCollisionDetection_OnGroundHit(object sender, EventArgs e)
-    {
-        Debug.Log("player: event triiggered: player state: " + _playerState);
+    {     
         _playerState = PlayerState.Running;
         OnGroundHit?.Invoke(this, EventArgs.Empty);
     }
@@ -249,23 +263,20 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGameOver()) return;
         if (GameManager.Instance.IsGamePaused()) return;
 
-        if (IsCharacterOnTheTrack() && IsPlayerRunning() && !IsPlayerJumping() && !_isJumping)
+        
+        if (IsCharacterOnTheTrack() && IsPlayerRunning() && !_isJumpingTransformLerpInProgress)
         {
             _playerState = PlayerState.Jumping;
             Jump();
-            OnJumpMade?.Invoke(this, EventArgs.Empty);
-           // StartCoroutine(TriggerDelay());
+            OnJumpMade?.Invoke(this, EventArgs.Empty);        
         }
     }
 
     IEnumerator SlidingTimerTrigger()
     {
-        // Wait for 1 second
-        yield return new WaitForSeconds(0.7f);
-
-        _playerState = PlayerState.Running;
-        // Set the trigger on the animator
-        OnSlideEnd?.Invoke(this, EventArgs.Empty);
+        yield return new WaitForSeconds(0.7f);// Wait for 0.7 second
+        _playerState = PlayerState.Running;       
+        OnSlideEnd?.Invoke(this, EventArgs.Empty);// Set the trigger on the animator
     }
 
     private void _gameInput_OnGoRightAction(object sender, System.EventArgs e)
@@ -353,8 +364,6 @@ public class Player : MonoBehaviour
         _isMoving = true;
     }
 
-
-
     // Update is called once per frame
     void Update()
     {
@@ -363,7 +372,7 @@ public class Player : MonoBehaviour
         if (GameManager.Instance.IsGamePaused()) return;
 
         //if character is somehow out of track while doing some action
-        if (!_isMoving &&  !_isJumping &&  !IsCharacterOnTheTrack())
+        if (!_isMoving &&  !_isJumpingTransformLerpInProgress &&  !IsCharacterOnTheTrack())
         {
             MoveCharacterToTrack();
         }
@@ -406,11 +415,6 @@ public class Player : MonoBehaviour
         return _playerCoinCount;
     }
 
-    public bool IsPlayerOnUpperPlane()
-    {
-        return transform.position.y == _upperPlanePosition.y;
-    }
-
     public bool IsPlayerRunning()
     {
         return _playerState == PlayerState.Running;
@@ -423,6 +427,12 @@ public class Player : MonoBehaviour
     public bool IsPlayerSliding()
     {
         return _playerState == PlayerState.Sliding;
+    }
+
+    private bool IsCharacterOnTheTrack()
+    {
+        //returns if the character is on the track to avoid input spam.
+        return transform.position.x == _rightLanePosition.x || transform.position.x == _leftLanePosition.x || transform.position.x == _middleLanePosition.x;
     }
 
     private void MoveCharacterToTrack()
@@ -457,21 +467,5 @@ public class Player : MonoBehaviour
             closesetTargetPosition = _rightLanePosition;
         }
         return closesetTargetPosition;
-    }
-
-    public bool IsPlayerInTransition()
-    {
-        return _isPlayerInTransition;
-    }
-
-    public void SetPlayerTransition(bool isPlayerInTransition)
-    {
-        _isPlayerInTransition = isPlayerInTransition;
-    }
-
-    private bool IsCharacterOnTheTrack()
-    {
-        //returns if the character is on the track to avoid input spam.
-        return transform.position.x == _rightLanePosition.x || transform.position.x == _leftLanePosition.x || transform.position.x == _middleLanePosition.x;
     }
 }

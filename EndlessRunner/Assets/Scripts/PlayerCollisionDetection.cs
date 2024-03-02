@@ -45,7 +45,6 @@ public class PlayerCollisionDetection : MonoBehaviour
 
         if (Physics.Raycast(feetOrigin, Vector3.down, out hitFeet, RaycastLength))
         {
-            Debug.Log(hitFeet.transform.tag);
             if (hitFeet.transform.tag == "GroundPlane")
             {
                 _timerForGroundedCheck = 0;

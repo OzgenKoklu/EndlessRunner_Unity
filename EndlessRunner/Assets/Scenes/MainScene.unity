@@ -4001,9 +4001,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 024e12b00860706468bd74aedeb54cec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelObjectListSO: {fileID: 11400000, guid: e6722b6d13e72d146a6427a410e5118f, type: 2}
-  _groundPlanePrefabTransform: {fileID: 3688575556555131555, guid: 26c26ba7b6045544b829e65d2dd62cbe,
-    type: 3}
   _platformSO: {fileID: 11400000, guid: 08a01797e7208cb48a5f37e215779f6a, type: 2}
   _platformWithRampSO: {fileID: 11400000, guid: 37bc9378b0f33b841940734cfa083643,
     type: 2}
@@ -4932,7 +4929,7 @@ MonoBehaviour:
   - ObjectName: Coin
     Prefab: {fileID: 3029782315669219994, guid: a1087dc3ad83a4947ab9b920fcf4e3bf,
       type: 3}
-    PoolSize: 60
+    PoolSize: 84
 --- !u!1 &1735168109
 GameObject:
   m_ObjectHideFlags: 0
@@ -5282,7 +5279,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea88bd2297bc67c4caf8e8f91cdde171, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 2038552610}
   _hearthTemplate: {fileID: 138832389}
   _hearthContainer: {fileID: 1443147745}
   _scoreText: {fileID: 747089376}
